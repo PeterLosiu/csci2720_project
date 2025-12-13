@@ -1,6 +1,6 @@
 import React from 'react';
 
-class LoginPage extends React.Component {
+class EventList extends React.Component {
   render() {
     return(
       <div></div>
@@ -8,4 +8,4 @@ class LoginPage extends React.Component {
   }
 }
 
-export default LoginPage;
+export default EventList;
