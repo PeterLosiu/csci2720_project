@@ -1,3 +1,4 @@
+const express = require('express'); // 补充导入express
 const router = express.Router();
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const LocationController = require('../controllers/locationController');

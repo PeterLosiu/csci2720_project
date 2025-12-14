@@ -22,8 +22,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // 数据库连接
 mongoose.connect('mongodb://localhost:27017/myDataBase')
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => {
+        console.log('MongoDB connected successfully');
+        // 数据库连接成功后初始化数据
+        return initData();
+    })
+    .then(() => {
+        console.log('Data initialization completed');
+    })
+    .catch(err => console.error('MongoDB connection or data initialization error:', err));
 
 // API路由
 app.use('/api/auth', authRoutes);
