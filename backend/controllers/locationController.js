@@ -1,4 +1,4 @@
-import LocationModel from '../models/locationModel.js';
+import LocationModel from '../models/Location.js';
 
 class locationController {
     
@@ -14,8 +14,7 @@ class locationController {
     static async getAllLocations(req, res) {}
     static async getLocationDistance(req, res) {}
 
-
-    // 2. Setter moethods
+    // 2. Setter methods
     static async createLocation(req, res) {
         try {
             // 1. 输入验证（参数检查）
@@ -50,7 +49,35 @@ class locationController {
         }
     }
 
-    
+    // 3. Sort moethods: return a list of location objects
+    static async sortByName(req, res) {
+        const locations = await LocationModel.find().sort({ name: 1 });
+        try{
+            res.status(200).json({ locations });
+        }catch(error){
+            console.error('Sort locations by name error:', error);
+            res.status(500).json({ error: 'Server Internal Error' });
+        }
+        
+    }
+    static async sortByDistance(req, res) {}
+    static async sortByEventNumber(req, res) {
+        // sort the locations and return a sorted list of location objects
+        try {
+            const locations = await LocationModel.find().sort({ eventCount: -1 });
+            res.status(200).json({ locations });
+        }catch(error){
+            console.error('Sort locations by event number error:', error);
+            res.status(500).json({ error: 'Server Internal Error' });
+        }
+    }
+
+    // other methods 
+    async calculateDistance(loc1, loc2) {
+        return 0;
+    }
+
+
 }
 
 export default locationController;
