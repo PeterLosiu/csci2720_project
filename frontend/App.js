@@ -8,7 +8,7 @@ import Map from './components/Map';
 import FavouriteList from './components/FavouriteList';
 import NoMatch from './components/NoMatch';
 import LoginPage from './components/LoginPage';
-
+import SingleLocation from './components/SingleLocation';
 
 class App extends React.Component {
   render() {
@@ -19,6 +19,7 @@ class App extends React.Component {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/login">Login</Link></li>
             <li><Link to="/LocationList">Images</Link></li>
+            <li><Link to="/SingleLocation">Images</Link></li>
             <li><Link to="/EventList">Slideshow</Link></li>
             <li><Link to="/Map">Slideshow</Link></li>
             <li><Link to="/FavouriteList">Slideshow</Link></li>
@@ -32,6 +33,7 @@ class App extends React.Component {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/LocationList" element={<LocationList />} />
+            <Route path="/SingleLocation" element={<SingleLocation />} />
             <Route path="/EventList" element={<EventList />} />
             <Route path="/Mao" element={<Map />} />
             <Route path="/FavouriteList" element={<FavouriteList />} />
