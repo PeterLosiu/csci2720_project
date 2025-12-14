@@ -8,8 +8,6 @@ const LocationController = require('../controllers/locationController');
 router.get('/sortByName', authenticate, LocationController.sortByName);
 router.get('/sortByDistance', authenticate, LocationController.sortByDistance);
 router.get('/sortByEventNumber', authenticate, LocationController.sortByEventNumber);
-router.get('/favourite/:id', authenticate, LocationController.addToFavorites);
-
 
 // 受保护的管理员路由
 // router.post('/', authenticate, requireAdmin, LocationController.createLocation);

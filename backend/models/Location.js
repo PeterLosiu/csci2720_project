@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const locationSchema = new mongoose.Schema({
-  LocationId: {
+  locationId: {
     type: Number,
     required: true,
     unique: true,
   },
-  NameC: {    // Chinese name
+  nameC: {    // Chinese name
     type: String,
     trim: true,
   },
-  NameE: {    // English name
+  nameE: {    // English name
     type: String,
     required: true,
     trim: true,
@@ -29,10 +29,22 @@ const locationSchema = new mongoose.Schema({
       ref: 'Event',
     },
   ],
+  eventCount: {
+    type: Number,
+    default: 0
+  },
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Comment',
     },
   ],
+  lastUpdated: {
+    type: Date,
+    default: Date.now
+  }
 });
+
+const Location = mongoose.model('Location', locationSchema); // Add missing model export
+
+module.exports = Location;
