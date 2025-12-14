@@ -1,4 +1,4 @@
-import LocationModel from '../models/Location.js';
+const LocationModel = require('../models/Location');
 
 class locationController {
     
@@ -80,4 +80,4 @@ class locationController {
 
 }
 
-export default locationController;
+module.exports = locationController;

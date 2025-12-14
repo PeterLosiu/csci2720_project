@@ -1,3 +1,4 @@
+const express = require('express');
 const router = express.Router();
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const favoriteController = require('../controllers/favoriteController');

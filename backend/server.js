@@ -2,6 +2,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { initData } = require('./services/dataFetcher'); // Keep the correct path
+
 
 // 创建Express应用
 const app = express();
@@ -21,16 +23,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 数据库连接
-mongoose.connect('mongodb://localhost:27017/myDataBase')
-    .then(() => {
-        console.log('MongoDB connected successfully');
-        // 数据库连接成功后初始化数据
-        return initData();
-    })
-    .then(() => {
-        console.log('Data initialization completed');
-    })
-    .catch(err => console.error('MongoDB connection or data initialization error:', err));
+async function connectDB() {
+  try {
+    // Removed deprecated options (useNewUrlParser, useUnifiedTopology)
+    await mongoose.connect('mongodb://localhost:27017/testDB');
+    console.log('MongoDB connected successfully');
+  } catch (err) {
+    console.error('MongoDB connection failed:', err);
+    process.exit(1); // Exit on connection failure
+  }
+}
+
+// Test function (from test.js)
+async function test() {
+  await connectDB(); // Connect to MongoDB first
+  await initData(); // Run data fetching and saving
+  console.log('Test completed');
+  process.exit(0); // Exit after successful test
+}
+
+test();
 
 // API路由
 app.use('/api/auth', authRoutes);

@@ -1,5 +1,5 @@
-import LocationModel from '../models/Location.js';
-import EventModel from '../models/Event.js';
+const LocationModel = require('../models/Location');
+const EventModel = require('../models/Event');
 
 class favoriteController {
     static async addLocationToFavorites(req, res) {
@@ -13,4 +13,4 @@ class favoriteController {
     }
 }
 
-export default favoriteController;
+module.exports = favoriteController;
