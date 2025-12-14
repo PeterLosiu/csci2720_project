@@ -35,7 +35,7 @@ class App extends React.Component {
             <Route path="/LocationList" element={<LocationList />} />
             <Route path="/SingleLocation" element={<SingleLocation />} />
             <Route path="/EventList" element={<EventList />} />
-            <Route path="/Mao" element={<Map />} />
+            <Route path="/Map" element={<Map />} />
             <Route path="/FavouriteList" element={<FavouriteList />} />
             <Route path="*" element={<NoMatch />} />
         </Routes>
