@@ -10,6 +10,7 @@ class favoriteController {
          * 4. Return success response to the client
          * 5. Capture and deal with errors
          */
+        res.status(200).json({message: 'Location added to favorites successfully' });
     }
 }
 

@@ -11,3 +11,5 @@ const requireAdmin = (req, res, next) => {
   // 3. 如果是管理员：next()
   // 4. 如果不是：返回403错误 res.status(403).json({error: '权限不足'})
 };
+
+module.exports = { authenticate, requireAdmin };

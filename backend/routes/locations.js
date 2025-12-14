@@ -6,9 +6,9 @@ const LocationController = require('../controllers/locationController');
 // 公开路由
 // router.get('/', authenticate, LocationController.getAllLocations);
 // router.get('/:id', authenticate, LocationController.getLocation);
-router.get('/sortByName', authenticate, LocationController.sortByName);
-router.get('/sortByDistance', authenticate, LocationController.sortByDistance);
-router.get('/sortByEventNumber', authenticate, LocationController.sortByEventNumber);
+router.get('/sortByName', LocationController.sortByName);
+// router.get('/sortByDistance', authenticate, LocationController.sortByDistance);
+// router.get('/sortByEventNumber', authenticate, LocationController.sortByEventNumber);
 
 // 受保护的管理员路由
 // router.post('/', authenticate, requireAdmin, LocationController.createLocation);
