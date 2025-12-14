@@ -1,20 +1,22 @@
+// routes/locations.js
+// Now your frontend can call:
+// /api/locations?sortBy=name&order=asc
+// /api/locations?sortBy=distance&order=asc
+// /api/locations?sortBy=events&order=desc
+// to build the table and sort columns.
+//Use /api/locations to get all markers for the map.
+//Use /api/locations/:id for the single-location view (details + distance).
+
+// routes/locations.js
+const express = require('express');
 const router = express.Router();
-const { authenticate, requireAdmin } = require('../middleware/auth');
-const LocationController = require('../controllers/locationController');
 
-// 公开路由
-// router.get('/', authenticate, LocationController.getAllLocations);
-// router.get('/:id', authenticate, LocationController.getLocation);
-router.get('/sortByName', authenticate, LocationController.sortByName);
-router.get('/sortByDistance', authenticate, LocationController.sortByDistance);
-router.get('/sortByEventNumber', authenticate, LocationController.sortByEventNumber);
+const locationController = require('../controllers/locationController');
+const { protect } = require('../middleware/auth');
 
-// 受保护的管理员路由
-// router.post('/', authenticate, requireAdmin, LocationController.createLocation);
-// router.put('/:id', authenticate, requireAdmin, LocationController.updateLocation);
-// 执行流程：
-// 1. authenticate → 验证是否登录
-// 2. requireAdmin → 验证是否是管理员
-// 3. LocationController.createLocation → 执行业务逻辑
+// According to spec, usually only authenticated users see app contents,
+// so I'm using protect here.
+router.get('/', protect, locationController.getLocationList);
+router.get('/:id', protect, locationController.getLocationById);
 
 module.exports = router;

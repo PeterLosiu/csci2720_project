@@ -1,83 +1,143 @@
-import LocationModel from '../models/Location.js';
+// controllers/locationController.js
+const Location = require('../models/Location');
 
-class locationController {
-    
-    // 1. Getter moethods
-    static async getLocations(req, res) {
-        /**
-         * 1. Receive requests to get location data
-         * 2. Use model functions to fetch location data from the database
-         * 3. Return the location data to the client
-         * 4. Capture and deal with errors
-         */
-    }
-    static async getAllLocations(req, res) {}
-    static async getLocationDistance(req, res) {}
+const CUHK_LAT = 22.41961;
+const CUHK_LNG = 114.20725;
 
-    // 2. Setter methods
-    static async createLocation(req, res) {
-        try {
-            // 1. 输入验证（参数检查）
-            const { name, latitude, longitude } = req.body;
-            if (!name || !latitude || !longitude) {
-                return res.status(400).json({ error: '缺少必要字段' });
-            }
-            
-            // 2. 业务逻辑处理（如检查地点是否已存在）
-            const exists = await LocationModel.findByName(name);
-            if (exists) {
-                return res.status(409).json({ error: '地点已存在' });
-            }
-            
-            // 3. 数据库操作（通过Model）
-            const newLocation = await LocationModel.create({
-                name,
-                coordinates: { lat: latitude, lng: longitude }
-            });
-            
-            // 4. 返回响应
-            res.status(201).json({
-                success: true,
-                data: newLocation,
-                message: '地点创建成功'
-            });
-            
-        } catch (error) {
-            // 5. 错误处理
-            console.error('创建地点错误:', error);
-            res.status(500).json({ error: '服务器内部错误' });
-        }
-    }
+// Haversine distance in km
+function calcDistanceKm(lat1, lon1, lat2, lon2) {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371; // Earth radius in km
 
-    // 3. Sort moethods: return a list of location objects
-    static async sortByName(req, res) {
-        const locations = await LocationModel.find().sort({ name: 1 });
-        try{
-            res.status(200).json({ locations });
-        }catch(error){
-            console.error('Sort locations by name error:', error);
-            res.status(500).json({ error: 'Server Internal Error' });
-        }
-        
-    }
-    static async sortByDistance(req, res) {}
-    static async sortByEventNumber(req, res) {
-        // sort the locations and return a sorted list of location objects
-        try {
-            const locations = await LocationModel.find().sort({ eventCount: -1 });
-            res.status(200).json({ locations });
-        }catch(error){
-            console.error('Sort locations by event number error:', error);
-            res.status(500).json({ error: 'Server Internal Error' });
-        }
-    }
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
 
-    // other methods 
-    async calculateDistance(loc1, loc2) {
-        return 0;
-    }
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
 
-
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
-export default locationController;
+// GET /api/locations
+// Query params (all optional):
+//   sortBy=name|distance|events
+//   order=asc|desc
+//   keyword=string           (search in nameE / nameC / area)
+//   area=areaCodeOrName     (filter by venue area)
+//   maxDistance=numberKm    (only locations within this distance from CUHK)
+exports.getLocationList = async (req, res) => {
+  try {
+    const sortBy = req.query.sortBy || 'name'; // name | distance | events
+    const order = req.query.order === 'desc' ? -1 : 1;
+
+    const keyword = req.query.keyword ? req.query.keyword.trim() : '';
+    const areaFilter = req.query.area ? req.query.area.trim() : '';
+    const maxDistanceStr = req.query.maxDistance;
+    const maxDistanceKm = maxDistanceStr
+      ? parseFloat(maxDistanceStr)
+      : null;
+
+    let locations = await Location.find().lean();
+
+    // 1. enrich with distance + eventCount
+    locations = locations.map((loc) => {
+      const distanceKm = calcDistanceKm(
+        CUHK_LAT,
+        CUHK_LNG,
+        loc.latitude,
+        loc.longitude
+      );
+
+      const eventCount =
+        typeof loc.eventCount === 'number'
+          ? loc.eventCount
+          : Array.isArray(loc.events)
+          ? loc.events.length
+          : 0;
+
+      return {
+        ...loc,
+        distanceKm: Number(distanceKm.toFixed(2)),
+        eventCount,
+      };
+    });
+
+    // 2. apply filters (keyword, area, distance)
+
+    // keyword filter: match on nameE / nameC / area (adjust fields if needed)
+    if (keyword) {
+      const kw = keyword.toLowerCase();
+      locations = locations.filter((loc) => {
+        const nameE = (loc.nameE || '').toLowerCase();
+        const nameC = (loc.nameC || '').toLowerCase();
+        const area = (loc.area || '').toLowerCase(); // adjust field name if different
+
+        return (
+          nameE.includes(kw) ||
+          nameC.includes(kw) ||
+          area.includes(kw)
+        );
+      });
+    }
+
+    // area filter: exact match
+    if (areaFilter) {
+      locations = locations.filter(
+        (loc) => loc.area && loc.area === areaFilter
+      );
+    }
+
+    // distance filter: only locations within maxDistanceKm of CUHK
+    if (!Number.isNaN(maxDistanceKm) && maxDistanceKm !== null) {
+      locations = locations.filter(
+        (loc) => loc.distanceKm <= maxDistanceKm
+      );
+    }
+
+    // 3. sort after filtering
+    if (sortBy === 'name') {
+      locations.sort((a, b) => a.nameE.localeCompare(b.nameE) * order);
+    } else if (sortBy === 'distance') {
+      locations.sort((a, b) => (a.distanceKm - b.distanceKm) * order);
+    } else if (sortBy === 'events') {
+      locations.sort((a, b) => (a.eventCount - b.eventCount) * order);
+    }
+
+    return res.json(locations);
+  } catch (err) {
+    console.error('getLocationList error:', err);
+    return res.status(500).json({ message: 'Failed to fetch locations' });
+  }
+};
+
+// GET /api/locations/:id
+// single location details + distance (for the single-location page)
+exports.getLocationById = async (req, res) => {
+  try {
+    const loc = await Location.findById(req.params.id).lean();
+    if (!loc) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
+
+    const distanceKm = calcDistanceKm(
+      CUHK_LAT,
+      CUHK_LNG,
+      loc.latitude,
+      loc.longitude
+    );
+
+    return res.json({
+      ...loc,
+      distanceKm: Number(distanceKm.toFixed(2)),
+    });
+  } catch (err) {
+    console.error('getLocationById error:', err);
+    return res
+      .status(500)
+      .json({ message: 'Failed to fetch location details' });
+  }
+};

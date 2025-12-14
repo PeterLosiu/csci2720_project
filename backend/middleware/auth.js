@@ -1,13 +1,57 @@
-const authenticate = (req, res, next) => {
-  // 1. 从请求头获取token（如：req.headers.authorization）
-  // 2. 验证token有效性（用JWT或其他方式）
-  // 3. 如果有效：将用户信息存入req.user，调用next()
-  // 4. 如果无效：返回401错误 res.status(401).json({error: '未认证'})
+// middleware/auth.js
+const jwt = require('jsonwebtoken');
+const User = require('../models/user.js'); // <-- note: ../models/user.js
+
+// Require any logged-in user (user OR admin)
+const protect = async (req, res, next) => {
+  let token;
+
+  // Expect header: Authorization: Bearer <token>
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer ')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: 'Not authorized, no token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'dev_jwt_secret' // use env var in production
+    );
+
+    // decoded should contain { id, isAdmin } from your login controller
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    // attach user to request
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error('auth protect error:', err);
+    return res.status(401).json({ message: 'Not authorized, token invalid' });
+  }
 };
 
-const requireAdmin = (req, res, next) => {
-  // 1. 假设authenticate已把用户信息放在req.user
-  // 2. 检查req.user.role === 'admin'
-  // 3. 如果是管理员：next()
-  // 4. 如果不是：返回403错误 res.status(403).json({error: '权限不足'})
+// Only allow admins
+const adminOnly = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin) {
+    return res
+      .status(403)
+      .json({ message: 'Admin only: you do not have permission' });
+  }
+  next();
+};
+
+module.exports = {
+  protect,
+  adminOnly,
 };
