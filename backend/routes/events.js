@@ -11,3 +11,4 @@ const express = require('express');
 const router = express.Router();
 const EventModel = require('../models/Event.js');
 
+module.exports = router;

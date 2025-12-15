@@ -1,5 +1,5 @@
 // controllers/favoriteController.js
-const User = require('../models/user');
+const User = require('../models/User');
 const Location = require('../models/Location');
 
 // POST /api/favorites/locations

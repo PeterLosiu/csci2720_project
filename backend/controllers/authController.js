@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/user.js');
+const UserModel = require('../models/User.js');
 const {isExist, validatePassword} = require('../middleware/userAuth.js');
 
 
