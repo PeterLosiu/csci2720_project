@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user.js');
+const {isExist, validatePassword} = require('../middleware/userAuth.js');
 
 
 class authController {
@@ -8,14 +9,9 @@ class authController {
         const { username, password } = req.body;
         try {
             // check if user already exists
-            const existingUser = await UserModel.findOne({ username });
-            if (existingUser) {
-                return res.status(400).json({ message: 'Username already taken' });
-            }
+            isExist(username, res);
             // check if new password meets criteria
-            if (password.length < 8) {
-                return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-            }
+            validatePassword(password, res);
             // create new user
             const newUser = new UserModel({username: username, password: password, isAdmin: false});
             await newUser.save();
