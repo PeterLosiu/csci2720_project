@@ -14,7 +14,7 @@ const PORT = 3000;
 const authRoutes = require('./routes/auth.js');
 const commentRoutes = require('./routes/comments.js');
 const eventRoutes = require('./routes/events.js');
-const favoritsRoutes = require('./routes/favorites.js');
+const favoritesRoutes = require('./routes/favorites.js');
 const locationRoutes = require('./routes/locations.js');
 const userRoutes = require('./routes/user.js');
 
@@ -47,7 +47,7 @@ runDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/favorites', favoritsRoutes);
+app.use('/api/favorites', favoritesRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/user', userRoutes);
 
