@@ -3,7 +3,7 @@ const {isExist, validatePassword} = require('../middleware/userAuth.js');
 
 
 class userController {
-    // 1. Getter methods
+    // Getter methods (public)
     static async getInfoById(req, res) {
         /**
          * Fetch user information by user ID
@@ -34,7 +34,7 @@ class userController {
         }
     }
 
-    // CRUD Users
+    // CRUD Users (admin)
     // Create
     static async createUser(req, res) {
         const { username, password, isAdmin } = req.body;
