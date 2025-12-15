@@ -133,15 +133,8 @@ for (const [locId, eventIds] of locationEventsMap) {
 // Apply filtering logic
 let allLocations = await Location.find();
 let qualifiedLocations = allLocations
-  .filter(loc => loc.eventCount >= 3)
+  .sort((a,b) => b.eventCount - a.eventCount) // simply sort and choose top10 locations with most event numbers
   .slice(0, 10);
-
-if (qualifiedLocations.length < 10) {
-  const otherLocations = allLocations
-    .filter(loc => loc.eventCount < 3)
-    .slice(0, 10 - qualifiedLocations.length);
-  qualifiedLocations.push(...otherLocations);
-}
 
 // Final save with qualified locations
 await Location.deleteMany({});
