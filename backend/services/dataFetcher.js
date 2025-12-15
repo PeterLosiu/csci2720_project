@@ -144,20 +144,20 @@ console.log(`Successfully save ${qualifiedLocations.length} locations`);
 
 // initiate data when user login
 async function initData() {
-// Check if database already has data using correct model
-const locationCount = await Location.countDocuments();
-if (locationCount > 0) {
-  console.log("database already contain data, no need to import again");
-  return;
-}
+  // Check if database already has data using correct model
+  const locationCount = await Location.countDocuments();
+  if (locationCount > 0) {
+    console.log("database already contain data, no need to import again");
+    return;
+  }
 
-// Download and parse the XML and store in json form
-const [eventsJSON, venuesJSON] = await Promise.all([
-  fetchAndParseXML(XML_URLS.programmes),
-  fetchAndParseXML(XML_URLS.venues)
-]);
+  // Download and parse the XML and store in json form
+  const [eventsJSON, venuesJSON] = await Promise.all([
+    fetchAndParseXML(XML_URLS.programmes),
+    fetchAndParseXML(XML_URLS.venues)
+  ]);
 
-await processData(eventsJSON, venuesJSON);
+  await processData(eventsJSON, venuesJSON);
 }
 
 module.exports = { initData }; // Add export if needed
