@@ -11,11 +11,12 @@ const app = express();
 const PORT = 3000;
 
 // 导入路由Routes
+const authRoutes = require('./routes/auth.js');
+const commentRoutes = require('./routes/comments.js');
+const eventRoutes = require('./routes/events.js');
+const favoritsRoutes = require('./routes/favorites.js');
 const locationRoutes = require('./routes/locations.js');
-// const adminRoutes = require('./routes/admin.js');
-// const favoritsRoutes = require('./routes/favorites.js');
-// const commentRoutes = require('./routes/comments.js');
-// const authRoutes = require('./routes/auth.js');
+const userRoutes = require('./routes/user.js');
 
 // 中间件
 app.use(cors());
@@ -43,11 +44,12 @@ async function runDB() {
 runDB();
 
 // API路由
-// app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/favorites', favoritsRoutes);
 app.use('/api/locations', locationRoutes);
-// app.use('/api/admin', adminRoutes);
-// app.use('/api/favorites', favoritsRoutes);
-// app.use('/api/comments', commentRoutes);
+app.use('/api/user', userRoutes);
 
 
 app.listen(PORT)
