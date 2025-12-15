@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 async function connectDB() {
   try {
     // Removed deprecated options (useNewUrlParser, useUnifiedTopology)
-    await mongoose.connect('mongodb://localhost:27017/testDB');
+    await mongoose.connect('mongodb://localhost:27017/projectDB');
     console.log('MongoDB connected successfully');
   } catch (err) {
     console.error('MongoDB connection failed:', err);
