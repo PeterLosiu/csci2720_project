@@ -1,16 +1,24 @@
-const UserModel = require('../models/user.js');
+const UserModel = require('../models/User.js');
 
-const isExist = async (username, res) => {
+const isDuplicate = async (username) => {
     const existingUser = await UserModel.findOne({ username });
     if (existingUser) {
-        return res.status(400).json({ message: 'Username already taken' });
+        return { 
+            success: false, 
+            message: 'User name already exists!' 
+        };
     }
+    return { success: true };
 }
 
-const validatePassword = (password, res) => {
+const validatePassword = (password) => {
     if (password.length < 8) {
-        return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        return { 
+                success: false, 
+                message: 'Password must be at least 8 characters long' 
+            };    
     }
+    return { success: true };
 }
 
-module.exports = { isExist, validatePassword };
+module.exports = { isDuplicate, validatePassword };

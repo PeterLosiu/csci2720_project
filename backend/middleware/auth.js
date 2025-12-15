@@ -1,13 +1,13 @@
 // middleware/auth.js
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.js'); // <-- note: ../models/user.js
+const User = require('../models/User.js'); // <-- note: ../models/user.js
 
 // Require any logged-in user (user OR admin)
 const protect = async (req, res, next) => {
   let token;
 
   // Expect header: Authorization: Bearer <token>
-  if (
+  if (  
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer ')
   ) {
