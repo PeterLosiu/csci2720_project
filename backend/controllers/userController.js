@@ -95,9 +95,11 @@ class userController {
         const { username, password, isAdmin } = req.body;
         try {
             // check if user already exists
-            isExist(username, res);
+            const duplicate = isDuplicate(username, res);
+            if(!duplicate.success){res.status(400).json({message: duplicate.message})}
             // check if new password meets criteria
-            validatePassword(password, res);
+            const validPassword = validatePassword(password, res);
+            if(!validPassword.success){res.status(400).json({message: validPassword.message})}
             // create new user
             const newUser = new UserModel({ username, password, isAdmin });
             await newUser.save();
