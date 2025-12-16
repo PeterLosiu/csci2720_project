@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Location List - Location & Event App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            $('#navbar-container').load('../components/Navbar.html');
+        });
+    </script>
+    <link rel="stylesheet" href="../css/LocationListStyle.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="location-list-container">
+        <div class="page-header">
+            <h1 class="page-title">Location List</h1>
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <div class="input-wrapper">
+                        <i class="uil uil-search input-icon"></i>
+                        <input 
+                            type="text" 
+                            id="keywordFilter" 
+                            class="filter-input" 
+                            placeholder="Search by location name">
+                    </div>
+                </div>
+
+                <div class="filter-item">
+                    <div class="input-wrapper">
+                        <i class="uil uil-map-marker input-icon"></i>
+                        <select id="areaFilter" class="filter-select">
+                            <option value="">All Areas</option>
+                            <option value="Sha Tin">Sha Tin</option>
+                            <option value="Kowloon">Kowloon</option>
+                            <option value="Hong Kong Island">Hong Kong Island</option>
+                            <option value="New Territories">New Territories</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-item">
+                    <div class="input-wrapper">
+                        <i class="uil uil-distance input-icon"></i>
+                        <input 
+                            type="number" 
+                            id="distanceFilter" 
+                            class="filter-input" 
+                            placeholder="Max Distance (km)"
+                            min="0"
+                            step="0.1">
+                    </div>
+                </div>
+
+                <div class="filter-item">
+                    <div class="input-wrapper">
+                        <i class="uil uil-sort input-icon"></i>
+                        <select id="sortByFilter" class="filter-select">
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="distance-asc">Distance (Near → Far)</option>
+                            <option value="distance-desc">Distance (Far → Near)</option>
+                            <option value="events-desc">Events (More → Less)</option>
+                            <option value="events-asc">Events (Less → More)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button id="applyFilters" class="filter-btn">Apply</button>
+                    <button id="resetFilters" class="reset-btn">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="update-time">Last Updated: <span id="lastUpdated">Loading...</span></div>
+            <div class="total-count">Total Locations: <span id="locationCount">0</span></div>
+        </div>
+
+        <div class="table-container">
+            <table class="location-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>LOCATION</th>
+                        <th>DISTANCE (KM)</th>
+                        <th>NUMBER OF EVENTS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr class="loading-row">
+                        <td colspan="5">Loading locations...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResult" class="no-result" style="display: none;">
+            <i class="uil uil-folder-open"></i>
+            <p>No locations found matching your filters.</p>
+        </div>
+    </div>
+
+    <script src="../js/LocationListScript.js"></script>
+</body>
+</html>

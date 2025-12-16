@@ -2,18 +2,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { initData } = require('./services/dataFetcher'); // Keep the correct path
-
+const { initData } = require('./services/dataFetcher'); // 确保路径正确
 
 // 创建Express应用
 const app = express();
-// 定义监听端口
 const PORT = 3000;
 
 // 导入路由Routes
 const locationRoutes = require('./routes/locations.js');
+// 取消注释：后续功能需要的路由（收藏/评论/权限）
 // const adminRoutes = require('./routes/admin.js');
-// const favoritsRoutes = require('./routes/favorites.js');
+// const favoritesRoutes = require('./routes/favorites.js');
 // const commentRoutes = require('./routes/comments.js');
 // const authRoutes = require('./routes/auth.js');
 
@@ -22,34 +21,34 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 数据库连接
-async function connectDB() {
+// 数据库连接 + 服务启动核心逻辑
+async function startServer() {
   try {
-    // Removed deprecated options (useNewUrlParser, useUnifiedTopology)
+    // 1. 连接MongoDB（自动创建projectDB）
     await mongoose.connect('mongodb://localhost:27017/projectDB');
-    console.log('MongoDB connected successfully');
+    console.log('MongoDB connected successfully → 已创建projectDB');
+
+    // 2. 执行数据初始化（仅首次启动时导入数据）
+    await initData();
+    console.log('数据初始化完成 → locations数据已写入projectDB');
+
+    // 3. 注册API路由
+    app.use('/api/locations', locationRoutes);
+    // app.use('/api/auth', authRoutes);
+    // app.use('/api/admin', adminRoutes);
+    // app.use('/api/favorites', favoritesRoutes);
+    // app.use('/api/comments', commentRoutes);
+
+    // 4. 启动Express服务（关键：不退出进程）
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+
   } catch (err) {
-    console.error('MongoDB connection failed:', err);
-    process.exit(1); // Exit on connection failure
+    console.error('启动失败:', err);
+    process.exit(1); // 仅在连接/初始化失败时退出
   }
 }
 
-// Test function (from test.js)
-async function test() {
-  await connectDB(); // Connect to MongoDB first
-  await initData(); // Run data fetching and saving
-  console.log('Test completed');
-  process.exit(0); // Exit after successful test
-}
-
-test();
-
-// API路由
-// app.use('/api/auth', authRoutes);
-app.use('/api/locations', locationRoutes);
-// app.use('/api/admin', adminRoutes);
-// app.use('/api/favorites', favoritsRoutes);
-// app.use('/api/comments', commentRoutes);
-
-
-app.listen(PORT)
+// 启动服务（核心：替换原有test()函数）
+startServer();

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Location Details - Location & Event App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+            $('#navbar-container').load('../components/Navbar.html');
+        });
+    </script>
+    <link rel="stylesheet" href="../css/SingleLocationStyle.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="detail-container">
+        <!-- 场馆基本信息 -->
+        <div class="location-header">
+            <div class="location-title">
+                <h1 id="locationNameE"></h1>
+                <p id="locationNameC" class="location-name-c"></p>
+            </div>
+            <div class="location-actions">
+                <button id="addToFavorite" class="action-btn favorite-btn">
+                    <i class="uil uil-heart-alt"></i> Add to Favorite
+                </button>
+            </div>
+        </div>
+
+        <!-- 场馆详情与地图 -->
+        <div class="detail-content">
+            <div class="detail-info">
+                <div class="info-item">
+                    <span class="info-label">Distance from CUHK:</span>
+                    <span id="locationDistance" class="info-value"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Number of Events:</span>
+                    <span id="locationEventCount" class="info-value"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Last Updated:</span>
+                    <span id="locationLastUpdated" class="info-value"></span>
+                </div>
+            </div>
+            <div class="detail-map">
+                <div id="locationMap" class="map-container"></div>
+            </div>
+        </div>
+
+        <!-- 评论区 -->
+        <div class="comment-section">
+            <h2 class="comment-title">Comments</h2>
+            <div class="comment-input">
+                <textarea id="commentContent" placeholder="Write your comment..." rows="3"></textarea>
+                <button id="submitComment" class="submit-btn">Submit Comment</button>
+            </div>
+            <div id="commentList" class="comment-list"></div>
+        </div>
+    </div>
+
+    <script src="../js/SingleLocationScript.js"></script>
+</body>
+</html>
