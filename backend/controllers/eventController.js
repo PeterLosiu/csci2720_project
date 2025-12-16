@@ -90,3 +90,5 @@ class eventController {
         }
     }
 }
+
+module.exports = eventController;
