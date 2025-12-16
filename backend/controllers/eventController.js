@@ -95,6 +95,16 @@ class eventController {
             res.status(500).json({ message: 'Error deleting event', error });
         }
     }
+    // get random event
+    static async getRandomEvent(req, res){
+        try{
+            const events = await EventModel.find({});
+            const index = Math.floor(Math.random()*events.length);
+            res.status(200).json(events[index]);
+        }catch(error){
+            res.status(500).json({message:"Server internal error", error});
+        }
+    }
 }
 
 module.exports = eventController;
