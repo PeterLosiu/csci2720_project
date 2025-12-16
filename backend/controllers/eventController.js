@@ -41,14 +41,15 @@ class eventController {
         const { titleE, titleC, venue, dateTime, description, presenter } = req.body;
         let {eventId} = req.body;
         try {
-            // check input validity
-            eventCreateInputAuth(req.body, res);
             // manually create new eventId if not provided: find the largest existing eventId and add 1
             if (!eventId) {
                 const lastEventId = await EventModel.findOne({}).sort({ eventId: -1 }).select('eventId');
-                const newId = lastEventId ? lastEventId + 1 : 1;
+                const newId = parseInt(lastEventId.eventId) ? parseInt(lastEventId.eventId) + 1 : 1;
                 eventId = newId
             }
+            // check input validity
+            const validInput = await eventCreateInputAuth({ eventId, titleE, titleC, venue, dateTime, description, presenter }, res);
+            if(!validInput.success){return res.status(400).json({ message: validInput.message });}
             // get venue
             const location = await LocationModel.findOne({$or: [{nameE: venue}, {nameC: venue}]});
             // create new event
@@ -56,7 +57,8 @@ class eventController {
             await newEvent.save();
             res.status(201).json({ message: 'Event created successfully', eventId: newEvent._id });
         } catch (error) {
-            res.status(500).json({ message: 'Error creating event', error });
+            console.log(error)
+            res.status(500).json({ message: 'Error creating event'});
         }
     }
     // update event by ID
