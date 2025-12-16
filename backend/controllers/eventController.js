@@ -64,17 +64,21 @@ class eventController {
     // update event by ID
     static async updateEvent(req, res) {
         const eventId = req.params.id;
-        const updateData = req.body;
+        const { titleE, titleC, venue, dateTime, description, presenter } = req.body;
         try {
             // check input validity
-            eventUpdateInputAuth(updateData, res);
+            const validInput = await eventUpdateInputAuth({ titleE, titleC, venue, dateTime, description, presenter }, res);
+            if(!validInput.success){return res.status(400).json({ message: validInput.message });}
+            // Get location
+            const location = await LocationModel.findOne({$or: [{nameE: venue}, {nameC: venue}]});
             // update event
-            const updatedEvent = await EventModel.findByIdAndUpdate(eventId, updateData, { new: true });
+            const updatedEvent = await EventModel.findByIdAndUpdate(eventId, { titleE, titleC, venue:location, dateTime, description, presenter }, { new: true });
             if (!updatedEvent) {
                 return res.status(404).json({ message: 'Event not found' });
             }
             res.status(200).json({ message: 'Event updated successfully', event: updatedEvent });
         } catch (error) {
+            console.log(error);
             res.status(500).json({ message: 'Error updating event', error });
         }
     }
