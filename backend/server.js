@@ -2,19 +2,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { initData } = require('./services/dataFetcher'); // 确保路径正确
+
+const { initData, updateEventList } = require('./services/dataFetcher'); // Keep the correct path
+
 
 // 创建Express应用
 const app = express();
 const PORT = 3000;
 
 // 导入路由Routes
+const authRoutes = require('./routes/auth.js');
+const commentRoutes = require('./routes/comments.js');
+const eventRoutes = require('./routes/events.js');
+const favoritesRoutes = require('./routes/favorites.js');
 const locationRoutes = require('./routes/locations.js');
-// 取消注释：后续功能需要的路由（收藏/评论/权限）
-// const adminRoutes = require('./routes/admin.js');
-// const favoritesRoutes = require('./routes/favorites.js');
-// const commentRoutes = require('./routes/comments.js');
-// const authRoutes = require('./routes/auth.js');
+
+const userRoutes = require('./routes/user.js');
+
 
 // 中间件
 app.use(cors());
@@ -50,5 +54,25 @@ async function startServer() {
   }
 }
 
-// 启动服务（核心：替换原有test()函数）
-startServer();
+
+async function runDB() {
+  await connectDB(); // Connect to MongoDB first
+  await initData(); // Run data fetching and saving
+  console.log('Database is ready');
+}
+
+runDB();
+
+updateEventList();
+
+// API路由
+app.use('/api/auth', authRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/locations', locationRoutes);
+app.use('/api/user', userRoutes);
+
+
+app.listen(PORT)
+

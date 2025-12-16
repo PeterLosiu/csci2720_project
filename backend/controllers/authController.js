@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/user.js');
-const {isExist, validatePassword} = require('../middleware/userAuth.js');
+const UserModel = require('../models/User.js');
+const {isDuplicate, validatePassword} = require('../middleware/userAuth.js');
 
 
 class authController {
@@ -9,9 +9,11 @@ class authController {
         const { username, password } = req.body;
         try {
             // check if user already exists
-            isExist(username, res);
+            const duplicate = isDuplicate(username, res);
+            if(!duplicate.success){res.status(400).json({message: duplicate.message})}
             // check if new password meets criteria
-            validatePassword(password, res);
+            const validPassword = validatePassword(password, res);
+            if(!validPassword.success){res.status(400).json({message: validPassword.message})}
             // create new user
             const newUser = new UserModel({username: username, password: password, isAdmin: false});
             await newUser.save();
@@ -36,7 +38,7 @@ class authController {
             if (!user) {
                 return res.status(401).json({ message: 'Authentication failed: User not found' });
             }
-            const isMatch = await user.comparePassword(password);
+            const isMatch = await user.matchPassword(password);
             // check if password does not match
             if (!isMatch) {
                 return res.status(401).json({ message: 'Authentication failed: Incorrect password' });

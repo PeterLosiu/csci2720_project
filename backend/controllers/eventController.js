@@ -41,38 +41,44 @@ class eventController {
         const { titleE, titleC, venue, dateTime, description, presenter } = req.body;
         let {eventId} = req.body;
         try {
-            // check input validity
-            eventCreateInputAuth(req.body, res);
             // manually create new eventId if not provided: find the largest existing eventId and add 1
             if (!eventId) {
                 const lastEventId = await EventModel.findOne({}).sort({ eventId: -1 }).select('eventId');
-                const newId = lastEventId ? lastEventId + 1 : 1;
+                const newId = parseInt(lastEventId.eventId) ? parseInt(lastEventId.eventId) + 1 : 1;
                 eventId = newId
             }
+            // check input validity
+            const validInput = await eventCreateInputAuth({ eventId, titleE, titleC, venue, dateTime, description, presenter }, res);
+            if(!validInput.success){return res.status(400).json({ message: validInput.message });}
             // get venue
             const location = await LocationModel.findOne({$or: [{nameE: venue}, {nameC: venue}]});
             // create new event
-            const newEvent = new EventModel({eventId, titleE, titleC, location, dateTime, description, presenter });
+            const newEvent = new EventModel({eventId, titleE, titleC, venue: location, dateTime, description, presenter });
             await newEvent.save();
             res.status(201).json({ message: 'Event created successfully', eventId: newEvent._id });
         } catch (error) {
-            res.status(500).json({ message: 'Error creating event', error });
+            console.log(error)
+            res.status(500).json({ message: 'Error creating event'});
         }
     }
     // update event by ID
     static async updateEvent(req, res) {
         const eventId = req.params.id;
-        const updateData = req.body;
+        const { titleE, titleC, venue, dateTime, description, presenter } = req.body;
         try {
             // check input validity
-            eventUpdateInputAuth(updateData, res);
+            const validInput = await eventUpdateInputAuth({ titleE, titleC, venue, dateTime, description, presenter }, res);
+            if(!validInput.success){return res.status(400).json({ message: validInput.message });}
+            // Get location
+            const location = await LocationModel.findOne({$or: [{nameE: venue}, {nameC: venue}]});
             // update event
-            const updatedEvent = await EventModel.findByIdAndUpdate(eventId, updateData, { new: true });
+            const updatedEvent = await EventModel.findByIdAndUpdate(eventId, { titleE, titleC, venue:location, dateTime, description, presenter }, { new: true });
             if (!updatedEvent) {
                 return res.status(404).json({ message: 'Event not found' });
             }
             res.status(200).json({ message: 'Event updated successfully', event: updatedEvent });
         } catch (error) {
+            console.log(error);
             res.status(500).json({ message: 'Error updating event', error });
         }
     }
@@ -89,4 +95,16 @@ class eventController {
             res.status(500).json({ message: 'Error deleting event', error });
         }
     }
+    // get random event
+    static async getRandomEvent(req, res){
+        try{
+            const events = await EventModel.find({});
+            const index = Math.floor(Math.random()*events.length);
+            res.status(200).json(events[index]);
+        }catch(error){
+            res.status(500).json({message:"Server internal error", error});
+        }
+    }
 }
+
+module.exports = eventController;
