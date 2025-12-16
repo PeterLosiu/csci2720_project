@@ -160,4 +160,158 @@ async function initData() {
   await processData(eventsJSON, venuesJSON);
 }
 
-module.exports = { initData }; // Add export if needed
+// update event list of existing location
+async function updateEventList() {
+  const locationCount = await Location.countDocuments();
+  if (locationCount === 0) {
+    console.log("Database has no locations, please initialize first");
+    return;
+  }
+
+  try {
+    // 1. Get current locations from database
+    const currentLocations = await Location.find();
+    const locationIdMap = new Map(
+      currentLocations.map(loc => [loc.locationId, loc._id]) // Map original locationId to MongoDB _id
+    );
+    const currentLocationIds = currentLocations.map(loc => loc._id); // MongoDB IDs of current locations
+
+    // 2. Fetch latest events data from API
+    const eventsJSON = await fetchAndParseXML(XML_URLS.programmes);
+
+    // 3. Get existing events for current locations
+    const existingEvents = await Event.find({ venue: { $in: currentLocationIds } });
+    const existingEventMap = new Map(
+      existingEvents.map(event => [event.eventId, event]) // Map eventId to event document
+    );
+
+    // 4. Process new events and track changes
+    const newEvents = [];
+    const updatedEvents = [];
+    const processedEventIds = new Set(); // Track eventIds from new data to find deletions later
+
+    // Parse and validate new events
+    eventsJSON.events.event.forEach(event => {
+      const eventId = parseInt(event.$.id, 10);
+      const locationId = event.venueid?.[0] ? parseInt(event.venueid[0], 10) : undefined;
+
+      // Skip events for locations not in our database
+      if (!locationId || !locationIdMap.has(locationId)) {
+        return;
+      }
+
+      // Validate date
+      const dateTimeStr = event.predateE?.[0];
+      let dateTime;
+      if (dateTimeStr) {
+        dateTime = new Date(dateTimeStr);
+        if (isNaN(dateTime.getTime())) {
+          return;
+        }
+      } else {
+        return;
+      }
+
+      // Prepare event data object
+      const eventData = {
+        eventId,
+        titleC: event.titlec?.[0] === '--' ? '暫無中文名稱' : (event.titlec?.[0] || '暫無中文名稱'),
+        titleE: event.titlee?.[0] === '--' ? 'No English Title' : (event.titlee?.[0] || 'No English Title'),
+        venue: locationIdMap.get(locationId),
+        dateTime,
+        description: event.desce?.[0] || 'No Description',
+        presenter: event.presenterorge?.[0] || 'No Presenter',
+      };
+
+      processedEventIds.add(eventId);
+
+      // Check if event exists in database
+      if (existingEventMap.has(eventId)) {
+        const existingEvent = existingEventMap.get(eventId);
+        
+        // Compare fields to detect changes
+        const isChanged = Object.entries(eventData).some(([key, value]) => {
+          // Special handling for Date and ObjectId comparison
+          if (key === 'dateTime') {
+            return !existingEvent.dateTime.getTime() === value.getTime();
+          }
+          if (key === 'venue') {
+            return !existingEvent.venue.equals(value);
+          }
+          return existingEvent[key] !== value;
+        });
+
+        if (isChanged) {
+          updatedEvents.push({ ...eventData, _id: existingEvent._id });
+        }
+      } else {
+        // New event
+        newEvents.push(eventData);
+      }
+    });
+
+    // 5. Find events to delete (existing but not in new data)
+    const eventsToDelete = existingEvents.filter(
+      event => !processedEventIds.has(event.eventId)
+    );
+    const deletedCount = eventsToDelete.length;
+    if (deletedCount > 0) {
+      await Event.deleteMany({ _id: { $in: eventsToDelete.map(e => e._id) } });
+    }
+
+    // 6. Insert new events
+    const newCount = newEvents.length;
+    let savedNewEvents = [];
+    if (newCount > 0) {
+      savedNewEvents = await Event.insertMany(newEvents);
+    }
+
+    // 7. Update existing events
+    const updatedCount = updatedEvents.length;
+    if (updatedCount > 0) {
+      await Promise.all(updatedEvents.map(event => 
+        Event.findByIdAndUpdate(event._id, event)
+      ));
+    }
+
+    // 8. Update locations with latest events
+    const allCurrentEvents = [
+      ...savedNewEvents,
+      ...updatedEvents.map(e => ({ _id: e._id, venue: e.venue })),
+      ...existingEvents.filter(e => processedEventIds.has(e.eventId) && !updatedEvents.some(ue => ue.eventId === e.eventId))
+    ];
+
+    const locationEventsMap = new Map(
+      currentLocationIds.map(id => [id.toString(), []])
+    );
+
+    allCurrentEvents.forEach(event => {
+      const locationKey = event.venue.toString();
+      if (locationEventsMap.has(locationKey)) {
+        locationEventsMap.get(locationKey).push(event._id);
+      }
+    });
+
+    // Update each location's event list, count, and timestamp
+    for (const [locationId, eventIds] of locationEventsMap) {
+      await Location.findByIdAndUpdate(locationId, {
+        events: eventIds,
+        eventCount: eventIds.length,
+        lastUpdated: new Date()
+      });
+    }
+
+    // 9. Show update statistics
+    console.log(`Event update complete:
+      - New events added: ${newCount}
+      - Existing events updated: ${updatedCount}
+      - Obsolete events deleted: ${deletedCount}
+      - Total events after update: ${newCount + (existingEvents.length - deletedCount)}`);
+
+  } catch (err) {
+    console.error("Failed to update event list:", err);
+    throw err;
+  }
+}
+
+module.exports = { initData, updateEventList };
