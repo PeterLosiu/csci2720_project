@@ -53,7 +53,7 @@ class eventController {
             // get venue
             const location = await LocationModel.findOne({$or: [{nameE: venue}, {nameC: venue}]});
             // create new event
-            const newEvent = new EventModel({eventId, titleE, titleC, location, dateTime, description, presenter });
+            const newEvent = new EventModel({eventId, titleE, titleC, venue: location, dateTime, description, presenter });
             await newEvent.save();
             res.status(201).json({ message: 'Event created successfully', eventId: newEvent._id });
         } catch (error) {

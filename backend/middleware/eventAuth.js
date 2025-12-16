@@ -94,9 +94,9 @@ const eventCreateInputAuth = async (inputData, res) => {
     } else if (typeof dateTime === 'number') {
         dateObj = new Date(dateTime);
     } else {
-        return res.status(400).json({ 
+        return {success: false,
             message: 'Invalid dateTime format' 
-        });
+        };
     }
 
     // check if dateTime is valid date
