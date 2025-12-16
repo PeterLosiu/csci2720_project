@@ -38,7 +38,7 @@ class authController {
             if (!user) {
                 return res.status(401).json({ message: 'Authentication failed: User not found' });
             }
-            const isMatch = await user.comparePassword(password);
+            const isMatch = await user.matchPassword(password);
             // check if password does not match
             if (!isMatch) {
                 return res.status(401).json({ message: 'Authentication failed: Incorrect password' });
