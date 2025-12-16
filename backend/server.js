@@ -2,7 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { initData } = require('./services/dataFetcher'); // Keep the correct path
+const { initData, updateEventList } = require('./services/dataFetcher'); // Keep the correct path
 
 
 // 创建Express应用
@@ -42,6 +42,8 @@ async function runDB() {
 }
 
 runDB();
+
+updateEventList();
 
 // API路由
 app.use('/api/auth', authRoutes);

@@ -15,8 +15,9 @@ const {protect, adminOnly} = require('../middleware/auth.js')
 
 // Public routes
 router.get('/',eventController.getAllEvents)
-router.get('/:title',eventController.getEventByTitle)
-router.get('/:id',eventController.getEventById)
+router.get('/byTitle/:title',eventController.getEventByTitle)
+router.get('/byId/:id',eventController.getEventById)
+router.get('/random', protect, eventController.getRandomEvent)
 
 // Admin routes
 router.post('/', protect, adminOnly, eventController.createEvent)

@@ -1,12 +1,9 @@
 const EventModel = require('../models/Event.js');
 const LocationModel = require('../models/Location.js')
 
-const eventUpdateInputAuth = async (inputData, res) => {
+const eventUpdateInputAuth = async (inputData) => {
     const { title, venue, dateTime, description, presenter } = inputData;
     // Types check:
-    if (eventId && typeof eventId !== 'number') {
-        return { success: false, message: 'Event ID must be a number' };
-    }
     if (title && typeof title !== 'string') {
         return { success: false,  message: 'English title must be a string' };
     }
@@ -19,9 +16,6 @@ const eventUpdateInputAuth = async (inputData, res) => {
     if (presenter && typeof presenter !== 'string') {
         return { success: false, message: 'Presenter must be a string' };
     }
-    if( dateTime && isNaN(dateTime.getTime())) {
-        return { success: false, message: 'Invalid date format' };
-    }
     // Venue validity
     if (venue) {
         const location = await LocationModel.findOne({$or: [{nameE: venue}, {nameC: venue}]}); 
@@ -29,11 +23,35 @@ const eventUpdateInputAuth = async (inputData, res) => {
             return { success: false, message: 'Venue does not exist' };
         }
     }
+    // DateTime exists
+    if(!dateTime) {
+        return { success: false, message: 'DateTime is required' };
+    }
+    // 将 dateTime 转换为 Date 对象
+    let dateObj;
+    
+    if (dateTime instanceof Date) {
+        dateObj = dateTime;
+    } else if (typeof dateTime === 'string') {
+        dateObj = new Date(dateTime);
+    } else if (typeof dateTime === 'number') {
+        dateObj = new Date(dateTime);
+    } else {
+        return {success: false,
+            message: 'Invalid dateTime format' 
+        };
+    }
+
+    // check if dateTime is valid date
+    if (isNaN(dateObj.getTime())) {
+        return { success: false, message: 'Invalid date value' };
+    }
+    // Return success
     return { success: true, message: 'Input is valid' };
 }
 
 
-const eventCreateInputAuth = async (inputData, res) => {
+const eventCreateInputAuth = async (inputData) => {
     const { eventId, titleE, titleC, venue, dateTime, description, presenter } = inputData;
     // check input validity
     // Types check:
@@ -94,9 +112,9 @@ const eventCreateInputAuth = async (inputData, res) => {
     } else if (typeof dateTime === 'number') {
         dateObj = new Date(dateTime);
     } else {
-        return res.status(400).json({ 
+        return {success: false,
             message: 'Invalid dateTime format' 
-        });
+        };
     }
 
     // check if dateTime is valid date
