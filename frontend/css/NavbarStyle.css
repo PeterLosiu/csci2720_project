@@ -1,0 +1,174 @@
+/* css/NavbarStyle.css */
+/* 1. 导航栏基础样式 */
+.navbar {
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 14px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999; /* 确保导航栏在最上层 */
+    transition: all 0.3s ease;
+}
+
+/* 2. Logo样式 */
+.logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: #4361ee;
+    text-decoration: none;
+    margin-right: 40px;
+}
+
+/* 3. 菜单列表 */
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #4a4e69;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-link.active {
+    color: #4361ee;
+    border-bottom: 2px solid #4361ee;
+}
+
+.nav-link:hover {
+    color: #4361ee;
+}
+
+/* 4. 右侧区域（主题切换+用户信息） */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    color: #4a4e69;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 6px;
+    border-radius: 50%;
+}
+
+.theme-toggle:hover {
+    background-color: #f0f2ff;
+    color: #4361ee;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.username {
+    color: #2b2d42;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.logout-btn {
+    background-color: #f0f2ff;
+    color: #4361ee;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #4361ee;
+    color: #ffffff;
+}
+
+/* 5. 响应式适配（手机/平板） */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 12px 20px;
+    }
+
+    .nav-menu {
+        gap: 20px;
+    }
+
+    .logo {
+        font-size: 16px;
+        margin-right: 20px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-menu {
+        display: none; /* 移动端隐藏菜单，可后续添加汉堡菜单 */
+    }
+
+    .username {
+        display: none; /* 移动端隐藏用户名，仅保留退出按钮 */
+    }
+}
+
+/* 6. 深色主题样式（额外功能） */
+body.dark .navbar {
+    background-color: #2b2d42;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .logo {
+    color: #a7c0ff;
+}
+
+body.dark .nav-link {
+    color: #e2e8f0;
+}
+
+body.dark .nav-link.active {
+    color: #a7c0ff;
+    border-bottom: 2px solid #a7c0ff;
+}
+
+body.dark .theme-toggle {
+    color: #e2e8f0;
+}
+
+body.dark .theme-toggle:hover {
+    background-color: #3a3d58;
+}
+
+body.dark .username {
+    color: #e2e8f0;
+}
+
+body.dark .logout-btn {
+    background-color: #3a3d58;
+    color: #a7c0ff;
+}
+
+body.dark .logout-btn:hover {
+    background-color: #4361ee;
+    color: #ffffff;
+}

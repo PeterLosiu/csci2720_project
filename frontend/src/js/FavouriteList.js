@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-
-class FavouriteList extends React.Component {
-  render() {
-    return(
-      <div></div>
-      );
-  }
-}
-
-export default FavouriteList;
-=======
 import React, { useEffect, useState } from 'react';
 
 export default function FavouriteList() {
@@ -78,4 +65,3 @@ export default function FavouriteList() {
     </div>
   );
 }
->>>>>>> bf2f1ce4c6e2d5883e7de989cc73137216d8c798

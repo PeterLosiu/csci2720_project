@@ -1,0 +1,472 @@
+/* 1. 全局样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', 'Roboto', sans-serif;
+}
+
+/* 2. 页面背景 */
+body {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    min-height: 100vh;
+    background-attachment: fixed;
+}
+
+/* 3. 首页容器 */
+.home-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 100px auto 50px;
+    padding: 0 20px;
+}
+
+/* 4. 筛选区样式 */
+.filter-section {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+.filter-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2b2d42;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-label {
+    display: block;
+    color: #4a4e69;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.filter-label:hover {
+    color: #4361ee;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.filter-input, .filter-select {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #2b2d42;
+    transition: all 0.2s ease;
+    background-color: #f8f9fa;
+}
+
+.filter-select {
+    padding-left: 42px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a4e69' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l4-4H4l4 4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+
+.filter-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    background-color: #ffffff;
+}
+
+.filter-input::placeholder {
+    color: #8d99ae;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #7209b7;
+    font-size: 18px;
+}
+
+.filter-action {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 2px;
+}
+
+.filter-btn {
+    background-color: #4361ee;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: #3a56d4;
+}
+
+.reset-btn {
+    background-color: #f8f9fa;
+    color: #4a4e69;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+    background-color: #f0f2ff;
+    color: #4361ee;
+    border-color: #e0e7ff;
+}
+
+/* 5. 控制区样式 */
+.control-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.sort-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-label {
+    color: #4a4e69;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.sort-select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #2b2d42;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: #4361ee;
+}
+
+.view-control {
+    display: flex;
+    gap: 8px;
+}
+
+.view-btn {
+    background-color: #f8f9fa;
+    color: #4a4e69;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.view-btn.active {
+    background-color: #4361ee;
+    color: #ffffff;
+    border-color: #4361ee;
+}
+
+.view-btn:hover:not(.active) {
+    background-color: #f0f2ff;
+    color: #4361ee;
+    border-color: #e0e7ff;
+}
+
+.update-time {
+    color: #8d99ae;
+    font-size: 14px;
+}
+
+/* 6. 内容区样式 */
+.content-view {
+    display: none;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    min-height: 500px;
+}
+
+.content-view.active {
+    display: block;
+}
+
+/* 7. 列表视图样式 */
+.location-table-container {
+    overflow-x: auto;
+}
+
+.location-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.location-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.location-table th {
+    padding: 14px 16px;
+    text-align: left;
+    color: #2b2d42;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.location-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f2ff;
+    color: #4a4e69;
+    font-size: 14px;
+}
+
+.location-table tbody tr:hover {
+    background-color: #fefeff;
+}
+
+.location-link {
+    color: #4361ee;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.location-link:hover {
+    color: #3a56d4;
+    text-decoration: underline;
+}
+
+.action-btn {
+    background-color: #f0f2ff;
+    color: #4361ee;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:disabled {
+    background-color: #e0e7ff;
+    color: #818cf8;
+    cursor: not-allowed;
+}
+
+.action-btn:hover:not(:disabled) {
+    background-color: #4361ee;
+    color: #ffffff;
+}
+
+.loading-row td {
+    text-align: center;
+    color: #8d99ae;
+    padding: 50px;
+}
+
+/* 8. 地图视图样式 */
+.map-container {
+    width: 100%;
+    height: 500px;
+    border-radius: 8px;
+}
+
+/* 地图弹窗样式 */
+.map-popup {
+    width: 200px;
+}
+
+.popup-title {
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: #2b2d42;
+}
+
+.popup-distance, .popup-events {
+    font-size: 13px;
+    color: #4a4e69;
+    margin-bottom: 4px;
+}
+
+/* 9. 响应式适配 */
+@media (max-width: 768px) {
+    .home-container {
+        margin-top: 80px;
+    }
+
+    .filter-section {
+        padding: 20px;
+    }
+
+    .filter-group {
+        gap: 15px;
+    }
+
+    .filter-action {
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .control-section {
+        justify-content: center;
+    }
+
+    .update-time {
+        width: 100%;
+        text-align: center;
+    }
+
+    .content-view {
+        padding: 15px;
+    }
+
+    .location-table th, .location-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-item {
+        min-width: 100%;
+    }
+
+    .view-control {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .map-container {
+        height: 400px;
+    }
+}
+
+/* 10. 深色主题适配 */
+body.dark .filter-section,
+body.dark .content-view {
+    background-color: #2b2d42;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .filter-title,
+body.dark .sort-label,
+body.dark .location-table th,
+body.dark .popup-title {
+    color: #e2e8f0;
+}
+
+body.dark .filter-label,
+body.dark .filter-input,
+body.dark .filter-select,
+body.dark .sort-select,
+body.dark .location-table td,
+body.dark .update-time,
+body.dark .popup-distance,
+body.dark .popup-events {
+    color: #e2e8f0;
+    background-color: #3a3d58;
+    border-color: #4a4d68;
+}
+
+body.dark .filter-input::placeholder {
+    color: #a0aec0;
+}
+
+body.dark .filter-input:focus,
+body.dark .filter-select:focus,
+body.dark .sort-select:focus {
+    border-color: #a7c0ff;
+    box-shadow: 0 0 0 3px rgba(167, 192, 255, 0.2);
+}
+
+body.dark .reset-btn {
+    background-color: #3a3d58;
+    color: #e2e8f0;
+    border-color: #4a4d68;
+}
+
+body.dark .reset-btn:hover {
+    background-color: #4a4f70;
+    color: #a7c0ff;
+    border-color: #6b7280;
+}
+
+body.dark .view-btn:not(.active) {
+    background-color: #3a3d58;
+    color: #e2e8f0;
+    border-color: #4a4d68;
+}
+
+body.dark .view-btn:not(.active):hover {
+    background-color: #4a4f70;
+    color: #a7c0ff;
+    border-color: #6b7280;
+}
+
+body.dark .location-table thead {
+    background-color: #3a3d58;
+    border-bottom-color: #4a4d68;
+}
+
+body.dark .location-table tbody tr:hover {
+    background-color: #3a3d58;
+}
+
+body.dark .location-link,
+body.dark .location-link:hover {
+    color: #a7c0ff;
+}
+
+body.dark .action-btn {
+    background-color: #4a4f70;
+    color: #a7c0ff;
+}
+
+body.dark .action-btn:hover:not(:disabled) {
+    background-color: #6b7280;
+    color: #ffffff;
+}
