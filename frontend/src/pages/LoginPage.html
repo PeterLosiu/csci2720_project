@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Login - Location & Event App</title>
+    <!-- 1. 引入jQuery（用于加载导航栏） -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 2. 加载导航栏（路径：从pages到components的相对路径） -->
+    <script>
+        $(function() {
+            // 路径：当前页面在frontend/src/pages → 上级目录是src → 进入components → Navbar.html
+            $('#navbar-container').load('../components/Navbar.html');
+        });
+    </script>
+    <!-- 3. 引入登录页样式（路径：从pages到css的相对路径） -->
+    <link rel="stylesheet" href="../../css/LoginPage.css">
+    <!-- 4. 引入Unicons图标库 -->
+    <!-- <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"> -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+</head>
+<body>
+    <!-- 导航栏容器 -->
+    <div id="navbar-container"></div>
+
+    <!-- 登录页主体内容（示例，可替换为你的原表单） -->
+    <div class="login-container">
+        <h1 class="login-title">Login to Location & Event App</h1>
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="username" class="form-label">
+                    <i class="uil uil-user"></i> Username
+                </label>
+                <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <i class="uil uil-lock"></i> Password
+                </label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+    </div>
+
+    <!-- 5. 引入登录页脚本（路径：从pages到js的相对路径） -->
+    <script src="../js/LoginPage.js"></script>
+</body>
+</html>

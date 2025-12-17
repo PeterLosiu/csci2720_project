@@ -46,12 +46,13 @@ class authController {
             // generate JWT token if credentials are valid
             const token = jwt.sign(
                 { id: user._id, username: user.username, isAdmin: user.isAdmin },
-                'dev_jwt_secret',
-                { expiresIn: '1h' }     
+                'dev_jwt_secret'    
             );
             // send token in response
             res.status(200).json({
                 message: 'Login successful',
+                username: user.username,
+                isAdmin: user.isAdmin,
                 token,
             });
         } catch (err) {

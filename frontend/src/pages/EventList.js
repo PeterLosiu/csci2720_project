@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-
-class EventList extends React.Component {
-  render() {
-    return(
-      <div></div>
-      );
-  }
-}
-
-export default EventList;
-=======
 import React, { useEffect, useState } from 'react';
 
 export default function EventList() {
@@ -176,4 +163,3 @@ export default function EventList() {
     </div>
   );
 }
->>>>>>> bf2f1ce4c6e2d5883e7de989cc73137216d8c798

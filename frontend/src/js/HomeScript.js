@@ -18,20 +18,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const locationMap = document.getElementById('locationMap');
 
     // 全局变量
-    const token = localStorage.getItem('userToken');
+    // const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const baseUrl = 'http://localhost:3000';
     let locationsData = [];
     let mapInstance = null;
     let favoriteLocationIds = new Set();
+
+    // 修复2：token为空拦截
+    if (!token) {
+        alert('Please login first');
+        window.location.href = '../pages/LoginPage.html';
+        return;
+    }
+
+    // 修复8：新增超时fetch封装
+    function fetchWithTimeout(url, options = {}, timeout = 10000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Request timeout (10s)')), timeout)
+            )
+        ]);
+    }
 
     // 初始化：加载收藏列表 + 场馆数据
     loadUserFavorites().then(() => {
         loadLocations();
     });
 
-    // 加载用户收藏列表
+    // 修复3：优化收藏加载逻辑
     function loadUserFavorites() {
-        return fetch(`${baseUrl}/api/user/favorites`, {
+        return fetchWithTimeout(`${baseUrl}/api/user/favorites`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -39,34 +57,38 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(response => {
-            if (!response.ok) return [];
+            if (!response.ok) {
+                console.error('Failed to load favorites:', response.status);
+                return [];
+            }
             return response.json();
         })
         .then(favorites => {
             favorites.forEach(item => {
-                if (item._id) favoriteLocationIds.add(item._id.toString());
+                const locId = item._id || item.locationId;
+                if (locId) favoriteLocationIds.add(locId.toString());
             });
         })
-        .catch(() => []);
+        .catch(error => {
+            console.error('Error loading favorites:', error);
+        });
     }
 
-    // 加载场馆数据（修正排序参数、字段映射）
+    // 修复8：使用超时fetch，优化排序/筛选逻辑
     function loadLocations() {
         const queryParams = new URLSearchParams();
         const [sortField, sortOrder] = sortBySelect.value.split('-');
         
-        // 传递后端要求的排序参数
         queryParams.append('sortBy', sortField);
         queryParams.append('order', sortOrder);
         
-        // 筛选参数
         if (keywordFilter.value.trim()) queryParams.append('keyword', keywordFilter.value.trim());
         if (areaFilter.value) queryParams.append('area', areaFilter.value);
         if (distanceFilter.value) queryParams.append('maxDistance', distanceFilter.value);
 
         locationTableBody.innerHTML = `<tr class="loading-row"><td colspan="5">Loading locations...</td></tr>`;
 
-        fetch(`${baseUrl}/api/locations?${queryParams.toString()}`, {
+        fetchWithTimeout(`${baseUrl}/api/locations?${queryParams.toString()}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -76,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(async response => {
             if (!response.ok) {
                 if (response.status === 401) {
-                    const error = await response.json();
+                    const error = await response.json().catch(() => ({ message: 'Unauthorized' }));
                     alert(error.message);
                     localStorage.removeItem('userToken');
                     localStorage.removeItem('currentUser');
@@ -88,10 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            locationsData = data; // 后端直接返回数组，无需提取locations字段
-            // 处理最后更新时间（取第一条数据的lastUpdated）
+            locationsData = data;
+            // 修复7：容错时间解析
             const lastUpdated = locationsData.length > 0 ? locationsData[0].lastUpdated : new Date();
-            const date = new Date(lastUpdated);
+            let date = new Date(lastUpdated);
+            if (isNaN(date.getTime())) date = new Date();
             lastUpdatedTimeEl.textContent = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}, ${date.toTimeString().slice(0, 8)}`;
             
             renderLocationList();
@@ -103,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 渲染场馆列表（修正name→nameE，numberOfEvents→eventCount）
+    // 修复1：修正标签语法；修复4：distanceKm空值保护；修复6：事件委托
     function renderLocationList() {
         if (locationsData.length === 0) {
             locationTableBody.innerHTML = `<tr><td colspan="5">No locations found matching your filters.</td></tr>`;
@@ -116,29 +139,21 @@ document.addEventListener('DOMContentLoaded', function() {
             tableHtml += `
                 <tr>
                     <td>${index + 1}</td>
-                    <td><a href="../pages/SingleLocation.html?id=${location._id}" class="location-link">${location.nameE}</a></td>
-                    <td>${location.distanceKm.toFixed(2)}km</td>
+                    <td>${location.nameE}</td>
+                    <td>${(location.distanceKm || 0).toFixed(2)}km</td>
                     <td>${location.eventCount || 0}</td>
                     <td>
                         <button class="action-btn add-to-favorite" data-location-id="${location._id}" ${isFavorite ? 'disabled' : ''}>
-                            <<i class="uil ${isFavorite ? 'uil-heart' : 'uil-heart-alt'}"></</i> ${isFavorite ? 'Favorited' : 'Add to Favorite'}
+                            <i class="uil ${isFavorite ? 'uil-heart' : 'uil-heart-alt'}"></i> ${isFavorite ? 'Favorited' : 'Add to Favorite'}
                         </button>
                     </td>
                 </tr>
             `;
         });
         locationTableBody.innerHTML = tableHtml;
-
-        // 绑定收藏事件
-        document.querySelectorAll('.add-to-favorite:not([disabled])').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const locationId = this.getAttribute('data-location-id');
-                addToFavorite(locationId, this);
-            });
-        });
     }
 
-    // 添加收藏（修正返回格式处理）
+    // 修复1：修正标签语法；优化错误处理
     function addToFavorite(locationId, btnElement) {
         if (favoriteLocationIds.has(locationId)) {
             alert('This location is already in your favorites');
@@ -146,9 +161,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         btnElement.disabled = true;
-        btnElement.innerHTML = '<<i class="uil uil-spinner rotating"></</i> Adding...';
+        btnElement.innerHTML = '<i class="uil uil-spinner rotating"></i> Adding...';
 
-        fetch(`${baseUrl}/api/favorites/locations`, {
+        fetchWithTimeout(`${baseUrl}/api/favorites/locations`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -158,48 +173,62 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(async response => {
             if (!response.ok) {
-                const error = await response.json();
+                const error = await response.json().catch(() => ({ message: 'Failed to add favorite' }));
                 throw new Error(error.message);
             }
             return response.json();
         })
         .then(data => {
             favoriteLocationIds.add(locationId);
-            btnElement.innerHTML = '<<i class="uil uil-heart"></</i> Favorited';
+            btnElement.innerHTML = '<i class="uil uil-heart"></i> Favorited';
             btnElement.style.backgroundColor = '#4361ee';
             btnElement.style.color = '#ffffff';
-            alert(data.message);
+            alert(data.message || 'Added to favorite successfully');
         })
         .catch(error => {
-            btnElement.innerHTML = '<<i class="uil uil-heart-alt"></</i> Try Again';
+            btnElement.innerHTML = '<i class="uil uil-heart-alt"></i> Try Again';
             btnElement.disabled = false;
             alert(error.message);
         });
     }
 
-    // 初始化地图（修正字段映射）
+    // 修复5：优化地图初始化逻辑（防重复/空容器）
     function initMap() {
-        if (mapInstance) return;
-
-        mapInstance = L.map('locationMap').setView([22.4148, 114.2045], 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 18
-        }).addTo(mapInstance);
+        if (!locationMap || locationsData.length === 0) return;
+        if (mapInstance) {
+            // 清空旧标记
+            mapInstance.eachLayer(layer => {
+                if (layer instanceof L.Marker) mapInstance.removeLayer(layer);
+            });
+        } else {
+            mapInstance = L.map('locationMap').setView([22.4148, 114.2045], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy;  contributors',
+                maxZoom: 18
+            }).addTo(mapInstance);
+        }
 
         locationsData.forEach(location => {
             if (!location.latitude || !location.longitude) return;
             const marker = L.marker([location.latitude, location.longitude]).addTo(mapInstance);
             marker.bindPopup(`
                 <div class="map-popup">
-                    <h3 class="popup-title"><a href="../pages/SingleLocation.html?id=${location._id}" class="location-link">${location.nameE}</a></h3>
-                    <p class="popup-distance">Distance: ${location.distanceKm.toFixed(2)}km</p>
-                    <p class="popup-events">Events: ${location.eventCount || 0}</p>
+                    <h3 class="popup-title">${location.nameE}</h3>
+                    <p class="popup-distance">Distance: ${(location.distanceKm || 0).toFixed(2)}km</p >
+                    <p class="popup-events">Events: ${location.eventCount || 0}</p >
                 </div>
             `);
         });
     }
+
+    // 修复6：事件委托（只绑定一次）
+    locationTableBody.addEventListener('click', function(e) {
+        const btn = e.target.closest('.add-to-favorite');
+        if (btn && !btn.disabled) {
+            const locationId = btn.getAttribute('data-location-id');
+            addToFavorite(locationId, btn);
+        }
+    });
 
     // 事件绑定
     applyFilterBtn.addEventListener('click', loadLocations);
@@ -216,14 +245,14 @@ document.addEventListener('DOMContentLoaded', function() {
         mapView.classList.remove('active');
         listViewBtn.classList.add('active');
         mapViewBtn.classList.remove('active');
-        if (locationsData.length > 0 && !mapInstance) initMap();
+        if (locationsData.length > 0) initMap();
     });
     mapViewBtn.addEventListener('click', function() {
         mapView.classList.add('active');
         listView.classList.remove('active');
         mapViewBtn.classList.add('active');
         listViewBtn.classList.remove('active');
-        if (locationsData.length > 0 && !mapInstance) initMap();
+        if (locationsData.length > 0) initMap();
     });
     keywordFilter.addEventListener('keypress', e => e.key === 'Enter' && loadLocations());
     distanceFilter.addEventListener('keypress', e => e.key === 'Enter' && loadLocations());
