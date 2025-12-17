@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             mapInstance.layers.add(symbolLayer);
+            mapInstance.events.add('hover', symbolLayer, handleMarkerHover);
             mapInstance.events.add('click', symbolLayer, handleMarkerClick);
             
             mapLoading.style.display = 'none';
@@ -156,8 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 标记点点击事件（修复链接路径）
-    function handleMarkerClick(e) {
+    // 标记点hover事件（修复链接路径）
+    function handleMarkerHover(e) {
         const properties = e.shapes[0].getProperties();
         if (!properties.id) return;
 
@@ -178,6 +179,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         popup.open(mapInstance);
     }
+
+    // 标记点点击事件
+    function handleMarkerClick(e) {
+        const properties = e.shapes[0].getProperties();
+        if (!properties.id) return;
+        window.location.href = `../pages/SingleLocation.html?id=${properties.id}`;
+    }
+
 
     // 控制按钮事件（保持原逻辑）
     zoomInBtn.addEventListener('click', function() {

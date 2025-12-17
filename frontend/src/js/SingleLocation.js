@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const commentContent = document.getElementById('commentContent');
     const submitCommentBtn = document.getElementById('submitComment');
     const commentList = document.getElementById('commentList');
+    const viewEventsLink = document.getElementById('viewEventsLink'); // 新增：事件链接元素
 
     // 全局变量
     const token = localStorage.getItem('userToken');
@@ -50,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
             initMap();
             loadComments();
             updateFavoriteBtn();
+            // 初始化事件跳转链接（新页面打开）
+            initEventsLink();
         } catch (error) {
             alert(error.message);
             window.location.href = '../pages/HomePage.html';
@@ -103,19 +106,80 @@ document.addEventListener('DOMContentLoaded', function() {
         locationLastUpdated.textContent = `${lastUpdated.getDate().toString().padStart(2, '0')}/${(lastUpdated.getMonth() + 1).toString().padStart(2, '0')}/${lastUpdated.getFullYear()}, ${lastUpdated.toTimeString().slice(0, 8)}`;
     }
 
+    // 初始化事件跳转链接（新页面打开）
+    function initEventsLink() {
+        // 设置事件页面跳转URL（根据你的项目结构调整）
+        const eventsPageUrl = `../pages/EventPage.html?locationId=${locationId}`;
+        // 绑定链接跳转（新标签页打开）
+        viewEventsLink.href = eventsPageUrl;
+        viewEventsLink.onclick = function(e) {
+            // 强制在新标签页打开（即使target="_blank"被覆盖）
+            window.open(this.href, '_blank');
+            e.preventDefault(); // 阻止默认跳转
+        };
+        // 无事件时隐藏链接
+        if (currentLocation.eventCount === 0 || currentLocation.eventCount === '0') {
+            viewEventsLink.parentElement.style.display = 'none';
+        }
+    }
+
     // 初始化地图
     function initMap() {
-        if (!currentLocation.latitude || !currentLocation.longitude) return;
+        // 校验地图容器是否存在 + 经纬度是否有效
+        if (!locationMap) {
+            console.error('地图容器#locationMap不存在');
+            return;
+        }
+        if (!currentLocation.latitude || !currentLocation.longitude) {
+            console.error('场馆经纬度缺失:', currentLocation);
+            locationMap.innerHTML = '<p style="text-align:center; padding:20px; color:#8d99ae;">No location coordinates available</p>';
+            return;
+        }
 
+        // 强制设置地图容器样式（避免样式缺失导致点击失效）
+        locationMap.style.width = '100%';
+        locationMap.style.height = '100%';
+        locationMap.style.borderRadius = '8px';
+        locationMap.style.overflow = 'hidden';
+
+        // 初始化地图
         mapInstance = L.map('locationMap').setView([currentLocation.latitude, currentLocation.longitude], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18
         }).addTo(mapInstance);
 
-        // 添加场馆标记
-        L.marker([currentLocation.latitude, currentLocation.longitude]).addTo(mapInstance)
-            .bindPopup(`<b>${currentLocation.nameE}</b>`)
-            .openPopup();
+        // 创建标记并显式绑定点击事件
+        const marker = L.marker([currentLocation.latitude, currentLocation.longitude])
+            .addTo(mapInstance);
+
+        // 弹窗添加事件（event）相关信息和新页面跳转链接
+        const eventsPageUrl = `../pages/EventPage.html?locationId=${locationId}`;
+        const popupContent = `
+            <div class="location-popup">
+                <h3>${currentLocation.nameE}</h3>
+                <p>Events: ${currentLocation.eventCount || 0}</p>
+                ${currentLocation.eventCount > 0 ? 
+                    `<a href="${eventsPageUrl}" class="event-link" target="_blank">View All Events (New Page)</a>` : 
+                    '<p>No events available</p>'
+                }
+            </div>
+        `;
+        marker.bindPopup(popupContent);
+
+        // 显式绑定标记点击事件（确保弹窗弹出）
+        marker.on('click', function() {
+            this.openPopup();
+            console.log('Marker clicked - Popup opened');
+        });
+
+        // 自动打开弹窗（可选）
+        marker.openPopup();
+
+        // 绑定地图点击事件（调试用）
+        mapInstance.on('click', function(e) {
+            console.log('Map clicked at:', e.latlng);
+        });
     }
 
     // 加载评论
@@ -191,12 +255,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // 更新收藏按钮状态
     function updateFavoriteBtn() {
         if (isFavorite) {
-            addToFavoriteBtn.innerHTML = '<<i class="uil uil-heart"></</i> Favorited';
+            addToFavoriteBtn.innerHTML = '<i class="uil uil-heart"></i> Favorited';
             addToFavoriteBtn.style.backgroundColor = '#4361ee';
             addToFavoriteBtn.style.color = '#ffffff';
             addToFavoriteBtn.disabled = true;
         } else {
-            addToFavoriteBtn.innerHTML = '<<i class="uil uil-heart-alt"></</i> Add to Favorite';
+            addToFavoriteBtn.innerHTML = '<i class="uil uil-heart-alt"></i> Add to Favorite';
             addToFavoriteBtn.style.backgroundColor = '#f0f2ff';
             addToFavoriteBtn.style.color = '#4361ee';
             addToFavoriteBtn.disabled = false;
@@ -206,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加收藏
     async function addToFavorite() {
         addToFavoriteBtn.disabled = true;
-        addToFavoriteBtn.innerHTML = '<<i class="uil uil-spinner rotating"></</i> Adding...';
+        addToFavoriteBtn.innerHTML = '<i class="uil uil-spinner rotating"></i> Adding...';
 
         try {
             const response = await fetch(`${baseUrl}/api/favorites/locations`, {
@@ -228,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateFavoriteBtn();
             alert(data.message);
         } catch (error) {
-            addToFavoriteBtn.innerHTML = '<<i class="uil uil-heart-alt"></</i> Try Again';
+            addToFavoriteBtn.innerHTML = '<i class="uil uil-heart-alt"></i> Try Again';
             addToFavoriteBtn.disabled = false;
             alert(error.message);
         }
