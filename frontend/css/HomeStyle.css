@@ -307,15 +307,58 @@ body {
     padding: 50px;
 }
 
-/* 8. 地图视图样式 */
+/* 8. 地图视图样式 - 核心修改：补充Azure地图容器样式 */
 .map-container {
     width: 100%;
     height: 500px;
     border-radius: 8px;
+    position: relative; /* 为地图加载/无结果提示提供定位参考 */
+    overflow: hidden;
+}
+
+/* Azure地图容器样式（解决只显示左上角问题） */
+#azureMap {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* 地图加载提示样式 */
+#mapLoading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 12px 24px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+    color: #4a4e69;
+}
+
+/* 地图无结果提示样式 */
+#mapNoResult {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 12px 24px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    z-index: 100;
+    display: none;
+    color: #4a4e69;
 }
 
 /* 地图弹窗样式 */
-.map-popup {
+.map-popup, .popup-content {
     width: 200px;
 }
 
@@ -325,13 +368,26 @@ body {
     color: #2b2d42;
 }
 
-.popup-distance, .popup-events {
+.popup-distance, .popup-events, .popup-info {
     font-size: 13px;
     color: #4a4e69;
     margin-bottom: 4px;
 }
 
-/* 9. 响应式适配 */
+.popup-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #4361ee;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.popup-link:hover {
+    text-decoration: underline;
+    color: #3a56d4;
+}
+
+/* 9. 响应式适配 - 补充地图响应式 */
 @media (max-width: 768px) {
     .home-container {
         margin-top: 80px;
@@ -368,6 +424,10 @@ body {
         padding: 10px 8px;
         font-size: 13px;
     }
+
+    .map-container {
+        height: 450px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -385,7 +445,7 @@ body {
     }
 }
 
-/* 10. 深色主题适配 */
+/* 10. 深色主题适配 - 补充地图深色样式 */
 body.dark .filter-section,
 body.dark .content-view {
     background-color: #2b2d42;
@@ -406,7 +466,8 @@ body.dark .sort-select,
 body.dark .location-table td,
 body.dark .update-time,
 body.dark .popup-distance,
-body.dark .popup-events {
+body.dark .popup-events,
+body.dark .popup-info {
     color: #e2e8f0;
     background-color: #3a3d58;
     border-color: #4a4d68;
@@ -457,7 +518,9 @@ body.dark .location-table tbody tr:hover {
 }
 
 body.dark .location-link,
-body.dark .location-link:hover {
+body.dark .location-link:hover,
+body.dark .popup-link,
+body.dark .popup-link:hover {
     color: #a7c0ff;
 }
 
@@ -469,4 +532,12 @@ body.dark .action-btn {
 body.dark .action-btn:hover:not(:disabled) {
     background-color: #6b7280;
     color: #ffffff;
+}
+
+/* 地图深色主题适配 */
+body.dark #mapLoading,
+body.dark #mapNoResult {
+    background-color: #3a3d58;
+    color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

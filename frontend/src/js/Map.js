@@ -8,36 +8,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const token = localStorage.getItem('userToken');
     const baseUrl = 'http://localhost:3000';
-    const mapCenter = [114.2045, 22.4148];
+    const mapCenter = [114.2045, 22.4148]; // Azure Maps要求：[longitude, latitude]（正确）
     const mapZoom = 13;
-    const azureMapsApiKey = 'YOUR_AZURE_MAPS_API_KEY'; // 替换为实际API Key
+    const azureMapsApiKey = 'YOUR_AZURE_MAPS_API_KEY'; // 替换为你的实际API Key
     let mapInstance = null;
     let dataSource = null;
     let locationsData = [];
 
-    // 初始化地图
+    // 【新增】先校验容器是否存在+样式是否正确
+    if (!mapContainer) {
+        console.error('地图容器#azureMap不存在');
+        return;
+    }
+    // 强制触发容器尺寸计算
+    mapContainer.style.display = 'block';
+
+    // 初始化地图 + 加载数据
     initAzureMap();
-    // 加载场馆数据
     loadLocations();
 
-    // 初始化Azure Maps
+    // 初始化Azure Maps（修复容器适配+错误处理）
     function initAzureMap() {
         mapLoading.style.display = 'flex';
 
+        // 【修复】初始化时显式设置容器尺寸
         mapInstance = new atlas.Map('azureMap', {
             center: mapCenter,
             zoom: mapZoom,
             authOptions: {
                 authType: 'subscriptionKey',
                 subscriptionKey: azureMapsApiKey
-            }
+            },
+            // 【新增】强制适配容器
+            view: 'Auto'
         });
 
         mapInstance.events.add('ready', function() {
+            // 【新增】确保地图加载完成后适配容器
+            mapInstance.resize();
+            
+            // 添加缩放控件
             mapInstance.controls.add(new atlas.control.ZoomControl(), { position: 'bottom-right' });
             dataSource = new atlas.source.DataSource();
             mapInstance.sources.add(dataSource);
 
+            // 标记点图层配置（保持原逻辑）
             const symbolLayer = new atlas.layer.SymbolLayer(dataSource, null, {
                 iconOptions: {
                     image: 'pin-round-blue',
@@ -45,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     anchor: 'bottom'
                 },
                 textOptions: {
-                    textField: ['get', 'nameE'], // 修正为nameE
+                    textField: ['get', 'nameE'],
                     offset: [0, 1.2],
                     color: '#2b2d42',
                     font: ['Arial Bold', 12]
@@ -53,17 +68,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             mapInstance.layers.add(symbolLayer);
             mapInstance.events.add('click', symbolLayer, handleMarkerClick);
+            
             mapLoading.style.display = 'none';
         });
 
+        // 【增强】更详细的错误处理
         mapInstance.events.add('error', function(err) {
             mapLoading.innerHTML = '<<i class="uil uil-exclamation-circle"></</i> Map load failed';
             mapLoading.style.color = '#e53e3e';
-            console.error('Azure Maps error:', err);
+            console.error('Azure Maps加载失败:', err);
         });
     }
 
-    // 加载场馆数据（修正字段映射）
+    // 加载场馆数据（保持原逻辑，补充无数据处理）
     function loadLocations(filters = {}) {
         const queryParams = new URLSearchParams();
         queryParams.append('sortBy', 'distance');
@@ -100,11 +117,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             mapNoResult.style.display = 'block';
             mapNoResult.querySelector('p').textContent = error.message;
-            console.error('Load locations error:', error);
+            console.error('加载场馆数据失败:', error);
         });
     }
 
-    // 更新地图标记点（修正字段映射）
+    // 更新地图标记点（保持原逻辑）
     function updateMapMarkers() {
         if (dataSource) dataSource.clear();
 
@@ -120,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const coordinate = [location.longitude, location.latitude];
             return new atlas.data.Feature(new atlas.data.Point(coordinate), {
                 id: location._id,
-                nameE: location.nameE, // 修正为nameE
+                nameE: location.nameE,
                 nameC: location.nameC || '无',
                 distanceKm: location.distanceKm.toFixed(2),
                 eventCount: location.eventCount || 0,
@@ -130,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         dataSource.add(features);
 
+        // 自动适配所有标记点的边界
         if (features.length > 0) {
             mapInstance.setCamera({
                 bounds: dataSource.getBounds(),
@@ -138,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 标记点点击事件
+    // 标记点点击事件（修复链接路径）
     function handleMarkerClick(e) {
         const properties = e.shapes[0].getProperties();
         if (!properties.id) return;
@@ -149,7 +167,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="popup-info">中文名称：${properties.nameC}</p>
                 <p class="popup-info">Distance: ${properties.distanceKm}km</p>
                 <p class="popup-info">Events: ${properties.eventCount}</p>
-                <a href="/locations/${properties.id}" class="popup-link">View Details</a>
+                <!-- 【修复】链接路径改为相对路径，匹配你的项目结构 -->
+                <a href="../pages/SingleLocation.html?id=${properties.id}" class="popup-link">View Details</a>
             </div>
         `;
 
@@ -160,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         popup.open(mapInstance);
     }
 
-    // 控制按钮事件
+    // 控制按钮事件（保持原逻辑）
     zoomInBtn.addEventListener('click', function() {
         if (mapInstance) mapInstance.setZoom(mapInstance.getZoom() + 1);
     });
@@ -190,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 筛选事件监听
+    // 筛选事件监听（保持原逻辑）
     window.addEventListener('filterUpdated', function(e) {
         loadLocations(e.detail);
     });

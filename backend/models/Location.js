@@ -33,4 +33,4 @@ locationSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Location', locationSchema);
+module.exports = mongoose.models.Location || mongoose.model('Location', locationSchema);
