@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as atlas from "azure-maps-control";
 import "azure-maps-control/dist/atlas.min.css";
+import API_BASE_URL from '../config';
 
 const AZURE_MAP_KEY = "9R4Zofs0CoJZXjwifmIOQ4wKIzAWggNDH8qpv0eqFAYzivvACdh4JQQJ99BLACYeBjFLXhVXAAAgAZMP2LEh";
 
@@ -13,7 +14,7 @@ export default function Map() {
   useEffect(() => {
     async function fetchLocations() {
       try {
-        const res = await fetch("http://localhost:3000/api/locations");
+        const res = await fetch(`${API_BASE_URL}/api/locations`);
         const data = await res.json();
         setLocations(data);
       } catch (err) {

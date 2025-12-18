@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import API_BASE_URL from '../config';
 
 export default function EventList() {
   const [locations, setLocations] = useState([]);
@@ -21,7 +22,7 @@ export default function EventList() {
           ...(maxDistance.trim() && { maxDistance: maxDistance.trim() })
         });
 
-        const res = await fetch(`http://localhost:3000/api/locations?${params}`, {
+        const res = await fetch(`${API_BASE_URL}/api/locations?${params}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -43,7 +44,7 @@ export default function EventList() {
   const addFav = async (locId) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3000/api/favorites/locations', {
+      const res = await fetch(`${API_BASE_URL}/api/favorites/locations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

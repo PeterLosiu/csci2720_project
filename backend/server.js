@@ -8,7 +8,7 @@ const { initData } = require('./services/dataFetcher'); // Keep the correct path
 // 创建Express应用
 const app = express();
 // 定义监听端口
-const PORT = 3000;
+const PORT = 3001;
 
 // 导入路由Routes
 const locationRoutes = require('./routes/locations.js');

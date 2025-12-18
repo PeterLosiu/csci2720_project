@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link} from 'react-router-dom';
 import Navbar from './Navbar';
-import SignUpPage from './SignUpPage';
 import '../style/LoginPage.css'
+import API_BASE_URL from '../config';
 
 
 const LoginPage = () => {
@@ -16,7 +16,7 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     
     const navigate = useNavigate();
-    const baseUrl = 'http://localhost:3000';
+    const baseUrl = API_BASE_URL;
 
     // 关键连接点 3: 替代 window.onload，页面加载时执行一次
     useEffect(() => {

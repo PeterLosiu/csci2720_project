@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../style/HomeStyle.css';
+import API_BASE_URL from '../config';
 
 const HomePage = () => {
   // State for filters
@@ -34,7 +35,7 @@ const HomePage = () => {
           order: sortOrder
         });
 
-        const response = await fetch(`http://localhost:3000/api/locations?${params}`, {
+        const response = await fetch(`${API_BASE_URL}/api/locations?${params}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -58,7 +59,7 @@ const HomePage = () => {
   // Handle "Add to Favorite"
   const addToFavorite = async (locationId) => {
     try {
-      const response = await fetch('http://localhost:3000/api/favorites/locations', {
+      const response = await fetch(`${API_BASE_URL}/api/favorites/locations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
