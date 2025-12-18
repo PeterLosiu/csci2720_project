@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const baseUrl = 'http://localhost:3000';
     const mapCenter = [114.2045, 22.4148]; // Azure Maps要求：[longitude, latitude]（正确）
     const mapZoom = 13;
-    const azureMapsApiKey = '9R4Zofs0CoJZXjwifmIOQ4wKIzAWggNDH8qpv0eqFAYzivvACdh4JQQJ99BLACYeBjFLXhVXAAAgAZMP2LEh'; // 替换为你的实际API Key
+    const azureMapsApiKey = '替换为你的实际API Key'; // 替换为你的实际API Key
     let mapInstance = null;
     let dataSource = null;
     let locationsData = [];
