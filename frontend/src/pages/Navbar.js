@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
-export default Navbar = () =>{
+const Navbar = () =>{
     return(
+        <BrowserRouter>
         <nav class="navbar">
             {/*左侧Logo与菜单*/}
             <div class="navbar-left">
@@ -34,5 +35,8 @@ export default Navbar = () =>{
                 </div> */}
             </div>
         </nav>
+        </BrowserRouter>
     )
 }
+
+export default Navbar;
