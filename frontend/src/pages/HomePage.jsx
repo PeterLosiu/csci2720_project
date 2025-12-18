@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../style/HomeStyle.css';
 import API_BASE_URL from '../config';
 
@@ -191,7 +191,11 @@ const HomePage = () => {
                 locations.map((loc, index) => (
                   <tr key={loc._id}>
                     <td>{index + 1}</td>
-                    <td>{loc.nameE}</td>
+                    <td>
+                      <Link to={`/SingleLocation/${loc._id}`} className="location-link">
+                        {loc.nameE}
+                      </Link>
+                    </td>
                     <td>{loc.distanceKm.toFixed(2)}</td>
                     <td>{loc.eventCount}</td>
                     <td>

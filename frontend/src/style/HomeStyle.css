@@ -455,11 +455,11 @@ body.dark .content-view {
 body.dark .filter-title,
 body.dark .sort-label,
 body.dark .location-table th,
-body.dark .popup-title {
+body.dark .popup-title,
+body.dark .filter-label {
     color: #e2e8f0;
 }
 
-body.dark .filter-label,
 body.dark .filter-input,
 body.dark .filter-select,
 body.dark .sort-select,
