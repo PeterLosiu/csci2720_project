@@ -36,8 +36,8 @@ npm start
 ```
 
 ### Site URLs
-```python
-http://localhost:3000 # (or the port shown in the frontend terminal)
+```
+http://localhost:3000	// (or the port shown in the frontend terminal)
 ```
 
 	
@@ -68,5 +68,6 @@ Everyone should make himself/herself familiar with the content of this website a
 違反有關規定的學生予以懲處，嚴重者包括開除學籍。
 
 同學不能掉以輕心，應熟習本網頁內容，以免犯錯。
+
 
 We have read this article carefully, and include the required declaration.
