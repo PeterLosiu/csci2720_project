@@ -128,7 +128,7 @@ export default function AdminEvents() {
             onKeyPress={e => e.key === 'Enter' && searchByTitle()}
          />
         <button onClick={searchByTitle} style={{marginLeft: 8}}>Search</button>
-        <button onClick={handleReset} style={{marginLeft: 4}}>Reset</button>
+        <button onClick={() => { setKeyword(''); setIsSearch(false); initList(); }} style={{marginLeft: 4}}>Reset</button>
         {isSearch && <span style={{marginLeft: 8, color: '#666'}}>(Search mode)</span>}
         </div>
 
