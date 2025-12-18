@@ -6,7 +6,7 @@ import { useParams, useLocation } from 'react-router-dom';
 // Importing web pages from /pages directory 
 import Home from './pages/HomePage';
 // import LocationList from './pages/LocationList';
-// import Map from './pages/Map';
+import Map from './pages/Map';
 import FavouriteList from './pages/FavouriteList';
 import SignUpPage from './pages/SignUpPage';
 
@@ -34,7 +34,7 @@ class App extends React.Component {
             {/* <Route path="/LocationList" element={<LocationList />} /> */}
             {/* <Route path="/SingleLocation" element={<SingleLocation />} /> */}
             <Route path="/EventList" element={<EventList />} />
-            {/* <Route path="/Map" element={<Map />} /> */}
+            <Route path="/Map" element={<Map />} />
             <Route path="/FavouriteList" element={<FavouriteList />} />
             {/* <Route path="*" element={<NoMatch />} /> */}
 
