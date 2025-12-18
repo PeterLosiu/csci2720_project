@@ -1,212 +1,101 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as atlas from "azure-maps-control";
 import "azure-maps-control/dist/atlas.min.css";
-import { useNavigate } from "react-router-dom";
 
-const baseUrl = "http://localhost:3000";
-const mapCenter = [114.2045, 22.4148];
-const mapZoom = 13;
-const azureMapsApiKey = "9R4Zofs0CoJZXjwifmIOQ4wKIzAWggNDH8qpv0eqFAYzivvACdh4JQQJ99BLACYeBjFLXhVXAAAgAZMP2LEh";
+const AZURE_MAP_KEY = "9R4Zofs0CoJZXjwifmIOQ4wKIzAWggNDH8qpv0eqFAYzivvACdh4JQQJ99BLACYeBjFLXhVXAAAgAZMP2LEh";
 
 export default function Map() {
-  const navigate = useNavigate();
-
   const mapRef = useRef(null);
-  const mapInstance = useRef(null);
-  const dataSource = useRef(null);
-  const activePopup = useRef(null);
+  const dataSourceRef = useRef(null);
+  const [locations, setLocations] = useState([]);
 
-  const [locationsData, setLocationsData] = useState([]);
-  const [mapStyle, setMapStyle] = useState("road");
-
-  const token = localStorage.getItem("userToken");
-
-  /* =========================
-     INIT MAP
-  ========================= */
+  /* 1️⃣ Fetch locations from backend */
   useEffect(() => {
-    mapInstance.current = new atlas.Map(mapRef.current, {
-      center: mapCenter,
-      zoom: mapZoom,
-      view: "Auto",
+    async function fetchLocations() {
+      try {
+        const res = await fetch("http://localhost:3000/api/locations");
+        const data = await res.json();
+        setLocations(data);
+      } catch (err) {
+        console.error("Failed to fetch locations:", err);
+      }
+    }
+    fetchLocations();
+  }, []);
+
+  /* 2️⃣ Initialize map once */
+  useEffect(() => {
+    if (mapRef.current) return;
+
+    mapRef.current = new atlas.Map("mapContainer", {
+      center: [114.1694, 22.3193], // Hong Kong
+      zoom: 11,
       authOptions: {
         authType: "subscriptionKey",
-        subscriptionKey: azureMapsApiKey,
+        subscriptionKey: AZURE_MAP_KEY,
       },
     });
 
-    mapInstance.current.events.add("ready", () => {
-      dataSource.current = new atlas.source.DataSource();
-      mapInstance.current.sources.add(dataSource.current);
+    mapRef.current.events.add("ready", () => {
+      dataSourceRef.current = new atlas.source.DataSource();
+      mapRef.current.sources.add(dataSourceRef.current);
 
       const symbolLayer = new atlas.layer.SymbolLayer(
-        dataSource.current,
+        dataSourceRef.current,
         null,
         {
           iconOptions: {
-            image: "pin-round-blue",
-            size: 0.8,
-            anchor: "bottom",
+            image: "pin-round-darkblue",
+            allowOverlap: true,
           },
           textOptions: {
-            textField: ["get", "nameE"],
+            textField: ["get", "name"],
             offset: [0, 1.2],
           },
         }
       );
 
-      mapInstance.current.layers.add(symbolLayer);
+      mapRef.current.layers.add(symbolLayer);
 
-      mapInstance.current.events.add(
-        "mouseenter",
-        symbolLayer,
-        handleMarkerHover
-      );
-      mapInstance.current.events.add(
-        "mouseleave",
-        symbolLayer,
-        () => activePopup.current?.close()
-      );
-      mapInstance.current.events.add(
-        "click",
-        symbolLayer,
-        handleMarkerClick
-      );
+      /* click pin → location detail page */
+      mapRef.current.events.add("click", symbolLayer, (e) => {
+        const feature = e.shapes[0];
+        const locationId = feature.getProperties().locationId;
+        window.location.href = `/locations/${locationId}`;
+      });
     });
-
-    loadLocations();
   }, []);
 
-  /* =========================
-     LOAD LOCATIONS
-  ========================= */
-  async function loadLocations(filters = {}) {
-    const params = new URLSearchParams({
-      sortBy: "distance",
-      order: "asc",
-    });
+  /* 3️⃣ Update pins when locations change */
+  useEffect(() => {
+    if (!dataSourceRef.current || locations.length === 0) return;
 
-    if (filters.keyword) params.append("keyword", filters.keyword);
-    if (filters.area) params.append("area", filters.area);
-    if (filters.maxDistance) params.append("maxDistance", filters.maxDistance);
+    dataSourceRef.current.clear();
 
-    const res = await fetch(`${baseUrl}/api/locations?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    locations.forEach((loc) => {
+      if (!loc.longitude || !loc.latitude) return;
 
-    const data = await res.json();
-    setLocationsData(data);
-    updateMapMarkers(data);
-  }
+      const point = new atlas.data.Point([
+        Number(loc.longitude),
+        Number(loc.latitude),
+      ]);
 
-  /* =========================
-     UPDATE MARKERS
-  ========================= */
-  function updateMapMarkers(data) {
-    if (!dataSource.current) return;
-
-    dataSource.current.clear();
-
-    const features = data.map((location) => {
-      if (!location.latitude || !location.longitude) return null;
-      return new atlas.data.Feature(
-        new atlas.data.Point([
-          location.longitude,
-          location.latitude,
-        ]),
-        {
-          id: location._id,
-          nameE: location.nameE,
-          nameC: location.nameC,
-          distanceKm: location.distanceKm,
-          eventCount: location.eventCount,
-        }
-      );
-    }).filter(Boolean);
-
-    dataSource.current.add(features);
-
-    if (features.length > 0) {
-      mapInstance.current.setCamera({
-        bounds: dataSource.current.getBounds(),
-        padding: 50,
+      const feature = new atlas.data.Feature(point, {
+        locationId: loc._id,
+        name: loc.name,
       });
-    }
-  }
 
-  /* =========================
-     MARKER EVENTS
-  ========================= */
-  function handleMarkerHover(e) {
-    activePopup.current?.close();
-
-    const props = e.shapes[0].getProperties();
-    const coord = e.shapes[0].getCoordinates();
-
-    const popup = new atlas.Popup({
-      position: coord,
-      content: `
-        <div>
-          <h3>${props.nameE}</h3>
-          <p>Distance: ${props.distanceKm.toFixed(2)} km</p>
-          <p>Events: ${props.eventCount}</p>
-        </div>
-      `,
+      dataSourceRef.current.add(feature);
     });
+  }, [locations]);
 
-    popup.open(mapInstance.current);
-    activePopup.current = popup;
-  }
-
-  function handleMarkerClick(e) {
-    const { id } = e.shapes[0].getProperties();
-    navigate(`/location/${id}`);
-  }
-
-  /* =========================
-     UI CONTROLS
-  ========================= */
-  function zoomIn() {
-    mapInstance.current.setZoom(mapInstance.current.getZoom() + 1);
-  }
-
-  function zoomOut() {
-    mapInstance.current.setZoom(mapInstance.current.getZoom() - 1);
-  }
-
-  function changeMapStyle(style) {
-    setMapStyle(style);
-    mapInstance.current.setStyle(
-      style === "dark" ? "grayscale_dark" : style
-    );
-  }
-
-  /* =========================
-     RENDER
-  ========================= */
   return (
-    <>
-      {/* NAV BAR */}
-      <nav className="nav-bar">
-        <button onClick={() => navigate("/")}>Locations</button>
-        <button onClick={() => navigate("/events")}>Events</button>
-        <button onClick={() => navigate("/favorites")}>Favorites</button>
-        <button onClick={() => navigate("/map")}>Map</button>
-      </nav>
-
-      {/* MAP CONTROLS */}
-      <div className="map-controls">
-        <button onClick={zoomIn}>＋</button>
-        <button onClick={zoomOut}>－</button>
-        <select onChange={(e) => changeMapStyle(e.target.value)}>
-          <option value="road">Road</option>
-          <option value="satellite">Satellite</option>
-          <option value="dark">Dark</option>
-        </select>
-      </div>
-
-      {/* MAP */}
-      <div ref={mapRef} style={{ height: "600px", width: "100%" }} />
-    </>
+    <div
+      id="mapContainer"
+      style={{
+        width: "100%",
+        height: "calc(100vh - 64px)", // leave space for navbar
+      }}
+    />
   );
 }
