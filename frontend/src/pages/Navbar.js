@@ -80,9 +80,9 @@ const Navbar = () => {
                     <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                         <Link to="/">Home</Link>
                     </li>
-                    <li className={`nav-item ${location.pathname === '/LocationList' ? 'active' : ''}`}>
+                    {/* <li className={`nav-item ${location.pathname === '/LocationList' ? 'active' : ''}`}>
                         <Link to="/LocationList">Location List</Link>
-                    </li>
+                    </li> */}
                     <li className={`nav-item ${location.pathname === '/Map' ? 'active' : ''}`}>
                         <Link to="/Map">Map</Link>
                     </li>

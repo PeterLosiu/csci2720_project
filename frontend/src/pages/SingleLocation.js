@@ -137,13 +137,17 @@ const SingleLocation = () => {
                 },
                 body: JSON.stringify({ content: newComment })
             });
+
+            const data = await res.json();
+
             if (res.ok) {
                 setNewComment("");
                 // 重新刷新评论列表
-                const updatedComments = await (await fetch(`${API_BASE_URL}/api/comments/location/${locationId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })).json();
-                setComments(updatedComments);
+                // const updatedComments = await (await fetch(`${API_BASE_URL}/api/comments/location/${locationId}`, {
+                //     headers: { 'Authorization': `Bearer ${token}` }
+                // })).json();
+                // setComments(updatedComments);
+                setComments(prevComments => [data, ...prevComments]);
             }
         } catch (err) {
             alert("Failed to post comment");
