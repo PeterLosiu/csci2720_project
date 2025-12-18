@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const baseUrl = 'http://localhost:3000';
     const mapCenter = [114.2045, 22.4148]; // Azure Maps要求：[longitude, latitude]（正确）
     const mapZoom = 13;
-    const azureMapsApiKey = 'YOUR_AZURE_MAPS_API_KEY'; // 替换为你的实际API Key
+    const azureMapsApiKey = '9R4Zofs0CoJZXjwifmIOQ4wKIzAWggNDH8qpv0eqFAYzivvACdh4JQQJ99BLACYeBjFLXhVXAAAgAZMP2LEh'; // 替换为你的实际API Key
     let mapInstance = null;
     let dataSource = null;
     let locationsData = [];
@@ -67,7 +67,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             mapInstance.layers.add(symbolLayer);
-            mapInstance.events.add('hover', symbolLayer, handleMarkerHover);
+            // 1. 鼠标移入：显示弹窗并改变鼠标样式
+            mapInstance.events.add('mouseenter', symbolLayer, (e) => {
+                mapInstance.getCanvas().style.cursor = 'pointer';
+                handleMarkerHover(e);
+            });
+            // 2. 鼠标移出：关闭弹窗 (可选)
+            mapInstance.events.add('mouseleave', symbolLayer, () => {
+                mapInstance.getCanvas().style.cursor = '';
+                popup.close()
+                // 如果你希望鼠标离开就关闭，可以在这里调用 popup.close()
+            });
             mapInstance.events.add('click', symbolLayer, handleMarkerClick);
             
             mapLoading.style.display = 'none';
@@ -159,7 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 标记点hover事件（修复链接路径）
     function handleMarkerHover(e) {
+        // close other popups first
+        if (activePopup) activePopup.close();
+
         const properties = e.shapes[0].getProperties();
+        const coordinate = e.shapes[0].getCoordinates();
         if (!properties.id) return;
 
         const popupContent = `
@@ -174,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         const popup = new atlas.Popup({
-            position: e.shapes[0].getCoordinates(),
+            position: coordinate,
             content: popupContent
         });
         popup.open(mapInstance);

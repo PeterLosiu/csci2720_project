@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const viewEventsLink = document.getElementById('viewEventsLink'); // 新增：事件链接元素
 
     // 全局变量
-    const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const baseUrl = 'http://localhost:3000';
     let currentLocation = null;
     let isFavorite = false;
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadComments();
             updateFavoriteBtn();
             // 初始化事件跳转链接（新页面打开）
-            initEventsLink();
+            // initEventsLink();
         } catch (error) {
             alert(error.message);
             window.location.href = '../pages/HomePage.html';
@@ -106,22 +106,22 @@ document.addEventListener('DOMContentLoaded', function() {
         locationLastUpdated.textContent = `${lastUpdated.getDate().toString().padStart(2, '0')}/${(lastUpdated.getMonth() + 1).toString().padStart(2, '0')}/${lastUpdated.getFullYear()}, ${lastUpdated.toTimeString().slice(0, 8)}`;
     }
 
-    // 初始化事件跳转链接（新页面打开）
-    function initEventsLink() {
-        // 设置事件页面跳转URL（根据你的项目结构调整）
-        const eventsPageUrl = `../pages/EventPage.html?locationId=${locationId}`;
-        // 绑定链接跳转（新标签页打开）
-        viewEventsLink.href = eventsPageUrl;
-        viewEventsLink.onclick = function(e) {
-            // 强制在新标签页打开（即使target="_blank"被覆盖）
-            window.open(this.href, '_blank');
-            e.preventDefault(); // 阻止默认跳转
-        };
-        // 无事件时隐藏链接
-        if (currentLocation.eventCount === 0 || currentLocation.eventCount === '0') {
-            viewEventsLink.parentElement.style.display = 'none';
-        }
-    }
+    // // 初始化事件跳转链接（新页面打开）
+    // function initEventsLink() {
+    //     // 设置事件页面跳转URL（根据你的项目结构调整）
+    //     const eventsPageUrl = `../pages/EventPage.html?locationId=${locationId}`;
+    //     // 绑定链接跳转（新标签页打开）
+    //     viewEventsLink.href = eventsPageUrl;
+    //     viewEventsLink.onclick = function(e) {
+    //         // 强制在新标签页打开（即使target="_blank"被覆盖）
+    //         window.open(this.href, '_blank');
+    //         e.preventDefault(); // 阻止默认跳转
+    //     };
+    //     // 无事件时隐藏链接
+    //     if (currentLocation.eventCount === 0 || currentLocation.eventCount === '0') {
+    //         viewEventsLink.parentElement.style.display = 'none';
+    //     }
+    // }
 
     // 初始化地图
     function initMap() {

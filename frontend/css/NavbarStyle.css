@@ -1,5 +1,12 @@
 /* css/NavbarStyle.css */
-/* 1. 导航栏基础样式 */
+/* 1. 全局重置（避免默认样式干扰） */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2. 导航栏基础样式 */
 .navbar {
     width: 100%;
     background-color: #ffffff;
@@ -11,46 +18,91 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 999; /* 确保导航栏在最上层 */
+    z-index: 9999; /* 确保导航栏在最上层 */
     transition: all 0.3s ease;
 }
 
-/* 2. Logo样式 */
+/* 3. Logo样式 */
 .logo {
     font-size: 18px;
     font-weight: 600;
     color: #4361ee;
     text-decoration: none;
     margin-right: 40px;
+    display: inline-block;
+    padding: 6px 0;
 }
 
-/* 3. 菜单列表 */
+/* 4. 菜单列表容器 */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* 新增：Logo与汉堡菜单间距 */
+}
+
 .nav-menu {
     display: flex;
     list-style: none;
     gap: 30px;
+    align-items: center;
 }
 
+/* 5. 导航链接样式（适配所有导航项：Home/Location/Event/Favourite） */
 .nav-link {
     text-decoration: none;
     color: #4a4e69;
     font-size: 15px;
     font-weight: 500;
     transition: all 0.2s ease;
-    padding: 6px 0;
+    padding: 8px 12px; /* 扩大点击区域 */
     border-bottom: 2px solid transparent;
+    border-radius: 4px;
+    display: inline-block;
 }
 
 .nav-link.active {
     color: #4361ee;
     border-bottom: 2px solid #4361ee;
+    background-color: rgba(67, 97, 238, 0.1); /* 激活状态背景 */
 }
 
 .nav-link:hover {
     color: #4361ee;
+    background-color: #f0f2ff; /* hover背景提示 */
 }
 
-/* 4. 右侧区域（主题切换+用户信息） */
+/* 6. 禁用状态（Map占位项） */
+.nav-link[disabled] {
+    color: #8d99ae;
+    cursor: not-allowed;
+}
+.nav-link[disabled]:hover {
+    background-color: transparent;
+    color: #8d99ae;
+}
+
+/* 7. 移动端汉堡菜单（关键：补充显示逻辑） */
+.hamburger-menu {
+    display: none; /* 默认隐藏 */
+    background: none;
+    border: none;
+    color: #4a4e69;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger-menu:hover {
+    background-color: #f0f2ff;
+    color: #4361ee;
+}
+
+/* 8. 右侧区域（主题切换+用户信息） */
 .navbar-right {
     display: flex;
     align-items: center;
@@ -64,8 +116,13 @@
     font-size: 18px;
     cursor: pointer;
     transition: all 0.2s ease;
-    padding: 6px;
+    padding: 8px;
     border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .theme-toggle:hover {
@@ -102,7 +159,7 @@
     color: #ffffff;
 }
 
-/* 5. 响应式适配（手机/平板） */
+/* 9. 响应式适配（手机/平板） */
 @media (max-width: 768px) {
     .navbar {
         padding: 12px 20px;
@@ -119,20 +176,46 @@
 
     .nav-link {
         font-size: 14px;
+        padding: 6px 10px;
     }
 }
 
 @media (max-width: 480px) {
+    /* 显示汉堡菜单 */
+    .hamburger-menu {
+        display: flex !important;
+    }
+
+    /* 隐藏默认菜单，点击汉堡菜单后通过JS显示 */
     .nav-menu {
-        display: none; /* 移动端隐藏菜单，可后续添加汉堡菜单 */
+        display: none !important;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        gap: 15px;
+        z-index: 9998;
+    }
+
+    /* JS控制显示菜单 */
+    .nav-menu.show-mobile {
+        display: flex !important;
     }
 
     .username {
-        display: none; /* 移动端隐藏用户名，仅保留退出按钮 */
+        display: none; /* 移动端隐藏用户名 */
+    }
+
+    .logo {
+        margin-right: 0;
     }
 }
 
-/* 6. 深色主题样式（额外功能） */
+/* 10. 深色主题样式（完整适配） */
 body.dark .navbar {
     background-color: #2b2d42;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -149,14 +232,34 @@ body.dark .nav-link {
 body.dark .nav-link.active {
     color: #a7c0ff;
     border-bottom: 2px solid #a7c0ff;
+    background-color: rgba(167, 192, 255, 0.1);
+}
+
+body.dark .nav-link:hover:not([disabled]) {
+    color: #a7c0ff;
+    background-color: #3a3d58;
+}
+
+body.dark .nav-link[disabled] {
+    color: #6b7280;
+}
+
+body.dark .hamburger-menu {
+    color: #e2e8f0;
+}
+
+body.dark .hamburger-menu:hover {
+    background-color: #3a3d58;
+    color: #a7c0ff;
 }
 
 body.dark .theme-toggle {
-    color: #e2e8f0;
+    color: #a7c0ff;
 }
 
 body.dark .theme-toggle:hover {
     background-color: #3a3d58;
+    color: #c7d2fe;
 }
 
 body.dark .username {
@@ -171,4 +274,25 @@ body.dark .logout-btn {
 body.dark .logout-btn:hover {
     background-color: #4361ee;
     color: #ffffff;
+}
+
+/* 11. 无障碍与焦点样式 */
+.nav-link:focus,
+.theme-toggle:focus,
+.logout-btn:focus,
+.hamburger-menu:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+}
+
+body.dark .nav-link:focus,
+body.dark .theme-toggle:focus,
+body.dark .logout-btn:focus,
+body.dark .hamburger-menu:focus {
+    box-shadow: 0 0 0 2px rgba(167, 192, 255, 0.3);
+}
+
+/* 12. 通用过渡动画 */
+button, a.nav-link {
+    transition: all 0.2s ease;
 }

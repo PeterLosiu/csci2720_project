@@ -11,7 +11,7 @@ export default function EventList() {
   useEffect(() => {
     async function load() {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
 
         const params = new URLSearchParams({
           sortBy,

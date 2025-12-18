@@ -211,13 +211,38 @@ document.addEventListener('DOMContentLoaded', function() {
         locationsData.forEach(location => {
             if (!location.latitude || !location.longitude) return;
             const marker = L.marker([location.latitude, location.longitude]).addTo(mapInstance);
-            marker.bindPopup(`
+            // marker.bindPopup(`
+            //     <div class="map-popup">
+            //         <h3 class="popup-title">${location.nameE}</h3>
+            //         <p class="popup-distance">Distance: ${(location.distanceKm || 0).toFixed(2)}km</p >
+            //         <p class="popup-events">Events: ${location.eventCount || 0}</p >
+            //     </div>
+            // `);
+            // --- 修复交互逻辑 ---
+            const popupContent = `
                 <div class="map-popup">
                     <h3 class="popup-title">${location.nameE}</h3>
-                    <p class="popup-distance">Distance: ${(location.distanceKm || 0).toFixed(2)}km</p >
-                    <p class="popup-events">Events: ${location.eventCount || 0}</p >
-                </div>
-            `);
+                    <p class="popup-distance">Distance: ${(location.distanceKm || 0).toFixed(2)}km</p>
+                    <p class="popup-events">Events: ${location.eventCount || 0}</p>
+                    <p style="font-size: 11px; color: #666;">(Click marker to view details)</p>
+                </div>`;
+
+            // 绑定弹窗
+            marker.bindPopup(popupContent, { closeButton: false });
+
+            // A. Hover 事件：鼠标移入显示，移出隐藏
+            marker.on('mouseover', function(e) {
+                this.openPopup();
+            });
+            marker.on('mouseout', function(e) {
+                // 注意：如果想让用户点击弹窗里的链接，这里可以不关闭，或加延时
+                this.closePopup();
+            });
+
+            // B. Click 事件：直接跳转页面
+            marker.on('click', function() {
+                window.location.href = `../pages/SingleLocation.html?id=${location._id}`;
+            });
         });
     }
 
