@@ -10,6 +10,7 @@ const HomePage = () => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('name-asc');
+  const [lastUpdated, setLastUpdated] = useState('Loading...');
 
   const navigate = useNavigate();
   const token = localStorage.getItem('userToken');
@@ -39,7 +40,11 @@ const HomePage = () => {
 
         if (!response.ok) throw new Error('Failed to load locations');
         const data = await response.json();
+        
         setLocations(data);
+        // Update last updated time (format as needed)
+        const formattedTime = new Date().toLocaleString();
+        setLastUpdated(formattedTime);
       } catch (err) {
         console.error(err);
       } finally {
@@ -117,11 +122,13 @@ const HomePage = () => {
               <i class="uil uil-distance input-icon"></i>
               <input
                 type="number"
+                id="distanceFilter" 
+                class="filter-input" 
                 placeholder="Max Distance (km)"
                 value={maxDistance}
                 onChange={(e) => setMaxDistance(e.target.value)}
                 min="0"
-                step="0.1"
+                step="1"
               />
             </div>
           </div>
@@ -146,17 +153,17 @@ const HomePage = () => {
                 </select>
             </div>
 
-            <div class="view-control">
+            {/* <div class="view-control">
                 <button id="listViewBtn" class="view-btn active">
                     <i class="uil uil-list-ul"></i> List View
                 </button>
                 <button id="mapViewBtn" class="view-btn">
                     <i class="uil uil-map"></i> Map View
                 </button>
-            </div>
+            </div> */}
 
             <div class="update-time">
-                Last Updated: <span id="lastUpdatedTime">Loading...</span>
+                Last Updated: <span id="lastUpdatedTime">{lastUpdated}</span>
             </div>
         </div>
 
