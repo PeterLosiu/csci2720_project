@@ -17,7 +17,7 @@ const { protect, adminOnly } = require('../middleware/auth');
 
 // public routes (only users can access)
 router.get('/info/:userId', protect, userController.getInfoById);
-router.get('/favorites/:userId', protect, userController.getFavoriteLocationsById);
+router.get('/favorites', protect, userController.getFavoriteLocations);
 
 // admin routes (only admins can access)
 router.post('/', protect, adminOnly, userController.createUser);

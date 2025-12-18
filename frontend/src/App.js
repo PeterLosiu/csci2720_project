@@ -13,7 +13,7 @@ import SignUpPage from './pages/SignUpPage';
 import EventList from './pages/EventList';
 // import NoMatch from './pages/NoMatch';
 import LoginPage from './pages/LoginPage';
-// import SingleLocation from './pages/SingleLocation';
+import SingleLocation from './pages/SingleLocation';
 
 import Navbar from './pages/Navbar';
 
@@ -32,7 +32,7 @@ class App extends React.Component {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             {/* <Route path="/LocationList" element={<LocationList />} /> */}
-            {/* <Route path="/SingleLocation" element={<SingleLocation />} /> */}
+            <Route path="/SingleLocation/:id" element={<SingleLocation />} />
             <Route path="/EventList" element={<EventList />} />
             <Route path="/Map" element={<Map />} />
             <Route path="/FavouriteList" element={<FavouriteList />} />
