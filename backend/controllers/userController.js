@@ -139,7 +139,7 @@ class userController {
                 return res.status(400).json({message: 'Request body is required'});
             }
             // validate updates
-            const duplicate = await isDuplicate(updates.username, res);
+            const duplicate = await isDuplicate(userId, updates.username, res);
             if(!duplicate.success){
                 return res.status(400).json({ message: duplicate.message });
             }

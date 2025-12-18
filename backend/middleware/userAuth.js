@@ -1,8 +1,8 @@
 const UserModel = require('../models/User.js');
 
-const isDuplicate = async (username) => {
+const isDuplicate = async (userId, username) => {
     const existingUser = await UserModel.findOne({ username });
-    if (existingUser) {
+    if (existingUser && existingUser._id != userId) {
         console.log('User name already exists!')
         return { 
             success: false, 
