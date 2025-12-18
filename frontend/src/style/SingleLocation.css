@@ -1,0 +1,494 @@
+/* ========================== 全局基础样式 ========================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', 'Roboto', sans-serif;
+}
+
+/* 页面背景与全局滚动条 */
+body {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    min-height: 100vh;
+    background-attachment: fixed;
+    padding-top: 100px;
+    scroll-behavior: smooth;
+}
+
+/* 全局滚动条样式优化 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #4361ee;
+}
+
+/* ========================== 详情页容器 ========================== */
+.detail-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 50px;
+    padding: 0 20px;
+}
+
+/* ========================== 场馆头部区域 ========================== */
+.location-header {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.location-title h1 {
+    font-size: 24px;
+    color: #2b2d42;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.location-name-c {
+    font-size: 16px;
+    color: #4a4e69;
+    font-weight: 400;
+}
+
+.action-btn {
+    background-color: #f0f2ff;
+    color: #4361ee;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.action-btn:disabled {
+    background-color: #e0e7ff;
+    color: #818cf8;
+    cursor: not-allowed;
+}
+
+.action-btn:hover:not(:disabled) {
+    background-color: #4361ee;
+    color: #ffffff;
+}
+
+/* ========================== 详情内容区 ========================== */
+.detail-content {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+/* 场馆信息卡片 */
+.detail-info {
+    flex: 1;
+    min-width: 300px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.info-label {
+    width: 160px;
+    font-size: 15px;
+    color: #4a4e69;
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 15px;
+    color: #2b2d42;
+    flex: 1;
+}
+
+/* 新增：事件跳转链接样式 */
+.info-value.event-link {
+    color: #4361ee;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+.info-value.event-link:hover {
+    color: #3a56d4;
+    text-decoration: underline;
+}
+body.dark .info-value.event-link {
+    color: #a7c0ff;
+}
+body.dark .info-value.event-link:hover {
+    color: #c7d2fe;
+}
+.info-item.hidden {
+    display: none !important;
+}
+
+/* 地图区域 */
+.detail-map {
+    flex: 2;
+    min-width: 300px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: 400px;
+}
+
+/* 地图容器核心样式（解决点击失效问题） */
+.map-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    position: relative; /* 为Leaflet内部元素提供定位参考 */
+    overflow: hidden; /* 防止地图溢出容器 */
+}
+
+/* 强制适配Leaflet地图容器 */
+#locationMap {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 地图弹窗样式 */
+.location-popup {
+    padding: 8px;
+    min-width: 200px;
+}
+.location-popup h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+}
+.location-popup p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+.event-link {
+    color: #4361ee;
+    text-decoration: none;
+    font-weight: 500;
+}
+.event-link:hover {
+    text-decoration: underline;
+}
+
+/* ========================== 评论区样式 ========================== */
+.comment-section {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.comment-title {
+    font-size: 20px;
+    color: #2b2d42;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.comment-input {
+    margin-bottom: 30px;
+}
+
+.comment-input textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #2b2d42;
+    resize: none;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    min-height: 120px;
+}
+
+.comment-input textarea:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.submit-btn {
+    background-color: #4361ee;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+    background-color: #3a56d4;
+}
+
+.submit-btn:disabled {
+    background-color: #a7c0ff;
+    cursor: not-allowed;
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.comment-item {
+    padding: 16px;
+    border-bottom: 1px solid #f0f2ff;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.comment-username {
+    font-size: 14px;
+    color: #4361ee;
+    font-weight: 500;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #8d99ae;
+}
+
+.comment-content {
+    font-size: 14px;
+    color: #4a4e69;
+    line-height: 1.5;
+}
+
+.no-comments {
+    text-align: center;
+    color: #8d99ae;
+    padding: 20px;
+    font-size: 15px;
+}
+
+.comment-error {
+    text-align: center;
+    color: #e53e3e;
+    padding: 20px;
+    font-size: 15px;
+}
+
+/* ========================== 响应式适配 ========================== */
+@media (max-width: 768px) {
+    body {
+        padding-top: 80px;
+    }
+
+    .location-header {
+        padding: 20px;
+    }
+
+    .location-title h1 {
+        font-size: 22px;
+    }
+
+    .detail-content {
+        gap: 15px;
+    }
+
+    .detail-info, .detail-map {
+        padding: 20px;
+        min-width: 100%;
+    }
+
+    .detail-map {
+        height: 350px;
+    }
+
+    .comment-section {
+        padding: 20px;
+    }
+
+    .comment-list {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .info-label {
+        width: 100%;
+        margin-bottom: 4px;
+    }
+
+    .detail-map {
+        height: clamp(250px, 50vh, 300px); /* 自适应视口高度 */
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .comment-input textarea {
+        min-height: 100px;
+    }
+}
+
+/* ========================== 深色主题适配 ========================== */
+body.dark {
+    background: linear-gradient(135deg, #1a1b26 0%, #2b2d42 100%);
+}
+
+/* 深色主题滚动条 */
+body.dark ::-webkit-scrollbar-track {
+    background: #2b2d42;
+}
+body.dark ::-webkit-scrollbar-thumb {
+    background: #4a4d68;
+}
+body.dark ::-webkit-scrollbar-thumb:hover {
+    background: #a7c0ff;
+}
+
+/* 深色主题容器背景 */
+body.dark .location-header,
+body.dark .detail-info,
+body.dark .detail-map,
+body.dark .comment-section {
+    background-color: #2b2d42;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 深色主题文字颜色 */
+body.dark .location-title h1,
+body.dark .info-value,
+body.dark .comment-title {
+    color: #e2e8f0;
+}
+
+body.dark .location-name-c,
+body.dark .info-label,
+body.dark .comment-content,
+body.dark .no-comments {
+    color: #a0aec0;
+}
+
+/* 深色主题按钮样式 */
+body.dark .action-btn {
+    background-color: #4a4f70;
+    color: #a7c0ff;
+}
+
+body.dark .action-btn:disabled {
+    background-color: #3a3d58;
+    color: #6b7280;
+}
+
+body.dark .action-btn:hover:not(:disabled) {
+    background-color: #6b7280;
+    color: #ffffff;
+}
+
+/* 深色主题评论输入框 */
+body.dark .comment-input textarea {
+    background-color: #3a3d58;
+    border-color: #4a4d68;
+    color: #e2e8f0;
+}
+
+body.dark .comment-input textarea:focus {
+    border-color: #a7c0ff;
+    box-shadow: 0 0 0 3px rgba(167, 192, 255, 0.2);
+}
+
+body.dark .submit-btn {
+    background-color: #4361ee;
+}
+
+body.dark .submit-btn:disabled {
+    background-color: #3a56d4;
+}
+
+/* 深色主题评论列表 */
+body.dark .comment-item {
+    border-bottom-color: #3a3d58;
+}
+
+body.dark .comment-username {
+    color: #a7c0ff;
+}
+
+body.dark .comment-error {
+    color: #fecdd3;
+}
+
+/* 深色主题地图弹窗 */
+body.dark .leaflet-popup-content-wrapper {
+    background-color: #3a3d58;
+    border-color: #4a4d68;
+}
+body.dark .leaflet-popup-content {
+    color: #e2e8f0;
+}
+body.dark .leaflet-popup-tip {
+    background-color: #3a3d58;
+}
+body.dark .event-link {
+    color: #a7c0ff;
+}
+
+/* ========================== 动画样式 ========================== */
+/* 加载旋转动画 */
+.rotating {
+    animation: spin 1s linear infinite;
+    transform-origin: center center; /* 围绕中心旋转 */
+    display: inline-block; /* 防止图标偏移 */
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 通用过渡动画 */
+button, input, textarea, select {
+    transition: all 0.2s ease;
+}
