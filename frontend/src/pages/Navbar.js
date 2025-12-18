@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import '../style/NavbarStyle.css';
 
 const Navbar = () =>{
     return(
-        <BrowserRouter>
+        // <BrowserRouter>
         <nav class="navbar">
             {/*左侧Logo与菜单*/}
             <div class="navbar-left">
@@ -35,7 +36,7 @@ const Navbar = () =>{
                 </div> */}
             </div>
         </nav>
-        </BrowserRouter>
+        // </BrowserRouter>
     )
 }
 
