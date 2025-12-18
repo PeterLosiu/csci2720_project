@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link} from 'react-router-dom';
 import Navbar from './Navbar';
-import SignUpPage from './SignUpPage';
 import '../style/LoginPage.css'
 
 
-const LoginPage = () => {
+const SignUpPage = () => {
 
     // 关键连接点 2: 替代 getElementById，使用 State 管理数据
     const [username, setUsername] = useState('');
@@ -46,7 +45,7 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            const response = await fetchWithTimeout(`${baseUrl}/api/auth/login`, {
+            const response = await fetchWithTimeout(`${baseUrl}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -56,12 +55,12 @@ const LoginPage = () => {
             if (!response.ok) throw new Error(data.message || 'Login failed');
 
             // 关键连接点 5: 存储逻辑
-            const storage = rememberMe ? localStorage : sessionStorage;
-            storage.setItem('userToken', data.token);
-            storage.setItem('currentUser', JSON.stringify({ 
-                username: data.username, 
-                isAdmin: data.isAdmin 
-            }));
+            // const storage = rememberMe ? localStorage : sessionStorage;
+            // storage.setItem('userToken', data.token);
+            // storage.setItem('currentUser', JSON.stringify({ 
+            //     username: data.username, 
+            //     isAdmin: data.isAdmin 
+            // }));
 
             if (rememberMe) {
                 localStorage.setItem('savedUsername', username);
@@ -70,7 +69,7 @@ const LoginPage = () => {
             }
 
             // 关键连接点 6: 替代 window.location.href (SPA 内部跳转)
-            navigate('/home'); 
+            navigate('/login'); 
 
         } catch (err) {
             setError(err.message);
@@ -84,7 +83,7 @@ const LoginPage = () => {
         <div className="page-wrapper">
             <Navbar />
             <div className="login-container">
-                <h1 className="login-title">Login</h1>
+                <h1 className="login-title">Sign Up</h1>
                 
                 {/* 关键连接点 7: 动态显示错误信息 */}
                 {error && <div id="errorMsg" style={{ opacity: 1, color: 'red' }}>{error}</div>}
@@ -126,12 +125,8 @@ const LoginPage = () => {
                         <label> Remember Me</label>
                     </div>
 
-                    <div>
-                        <Link to="/signup">Sign up</Link>
-                    </div>
-
                     <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? 'Signing in...' : 'Sign In'}
+                        {loading ? 'Signing up...' : 'Sign up'}
                     </button>
                 </form>
             </div>
@@ -164,4 +159,4 @@ const LoginPage = () => {
     // );
 };
 
-export default LoginPage;
+export default SignUpPage;

@@ -15,6 +15,7 @@ const Navbar = () =>{
                     <li class="nav-item"><Link to="/Map">Map</Link></li>
                     <li class="nav-item"><Link to="/FavouriteList">Favourite List</Link></li>
                     {/* <!-- 管理员专属菜单（登录后根据权限显示） --> */}
+                    <li class="nav-item"><Link to="/EventList">Event List</Link></li>
                     {/* <li class="nav-item admin-menu" style="display: none;">
                         User Manager
                     </li>

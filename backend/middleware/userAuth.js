@@ -3,6 +3,7 @@ const UserModel = require('../models/User.js');
 const isDuplicate = async (username) => {
     const existingUser = await UserModel.findOne({ username });
     if (existingUser) {
+        console.log('User name already exists!')
         return { 
             success: false, 
             message: 'User name already exists!' 
@@ -13,6 +14,7 @@ const isDuplicate = async (username) => {
 
 const validatePassword = (password) => {
     if (password.length < 8) {
+        console.log('User name already exists!')
         return { 
                 success: false, 
                 message: 'Password must be at least 8 characters long' 

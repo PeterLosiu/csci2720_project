@@ -7,7 +7,8 @@ import { useParams, useLocation } from 'react-router-dom';
 import Home from './pages/HomePage';
 // import LocationList from './pages/LocationList';
 // import Map from './pages/Map';
-// import FavouriteList from './pages/FavouriteList';
+import FavouriteList from './pages/FavouriteList';
+import SignUpPage from './pages/SignUpPage';
 
 import EventList from './pages/EventList';
 // import NoMatch from './pages/NoMatch';
@@ -29,12 +30,14 @@ class App extends React.Component {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
             {/* <Route path="/LocationList" element={<LocationList />} /> */}
             {/* <Route path="/SingleLocation" element={<SingleLocation />} /> */}
-            {/* <Route path="/EventList" element={<EventList />} /> */}
+            <Route path="/EventList" element={<EventList />} />
             {/* <Route path="/Map" element={<Map />} /> */}
-            {/* <Route path="/FavouriteList" element={<FavouriteList />} /> */}
+            <Route path="/FavouriteList" element={<FavouriteList />} />
             {/* <Route path="*" element={<NoMatch />} /> */}
+
         </Routes>
       </BrowserRouter>
     );

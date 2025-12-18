@@ -9,11 +9,11 @@ class authController {
         const { username, password } = req.body;
         try {
             // check if user already exists
-            const duplicate = isDuplicate(username, res);
-            if(!duplicate.success){res.status(400).json({message: duplicate.message})}
+            const duplicate = await isDuplicate(username, res);
+            if(!duplicate.success){return res.status(400).json({message: duplicate.message})}
             // check if new password meets criteria
-            const validPassword = validatePassword(password, res);
-            if(!validPassword.success){res.status(400).json({message: validPassword.message})}
+            const validPassword = await validatePassword(password, res);
+            if(!validPassword.success){return res.status(400).json({message: validPassword.message})}
             // create new user
             const newUser = new UserModel({username: username, password: password, isAdmin: false});
             await newUser.save();
