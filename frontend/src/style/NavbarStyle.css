@@ -1,0 +1,191 @@
+/* --- 1. 全局变量与基础设置 --- */
+:root {
+  --nav-height: 70px;
+  --primary-color: #4361ee;
+  --primary-light: #f0f2ff;
+  --text-main: #4a4e69;
+  --bg-navbar: #ffffff;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 如果 body 有固定定位，确保内容不被导航栏遮挡 */
+body {
+  padding-top: var(--nav-height);
+  transition: background-color 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- 2. 导航栏布局 --- */
+.navbar {
+  width: 100%;
+  height: var(--nav-height);
+  background-color: var(--bg-navbar);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  transition: var(--transition);
+}
+
+.navbar-left, .navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+/* --- 3. Logo & 链接 --- */
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-right: 40px;
+  letter-spacing: -0.5px;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 10px; /* 改用较小的间距，配合 padding 使用 */
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 8px;
+  transition: var(--transition);
+  position: relative;
+}
+
+/* 悬停与激活效果 */
+.nav-link:hover:not([disabled]) {
+  color: var(--primary-color);
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  color: var(--primary-color);
+  background-color: var(--primary-light);
+  font-weight: 600;
+}
+
+/* 下划线装饰（可选，增加视觉精致感） */
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+/* --- 4. 按钮样式 (主题 & 退出) --- */
+.theme-toggle, .hamburger-menu {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 20px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.theme-toggle:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  transform: rotate(15deg);
+}
+
+.logout-btn {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+/* --- 5. 响应式与移动端菜单 --- */
+.hamburger-menu {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .navbar { padding: 0 20px; }
+  .nav-menu { gap: 5px; }
+  .logo { margin-right: 20px; }
+}
+
+@media (max-width: 768px) {
+  .hamburger-menu { display: flex; }
+  .username { display: none; }
+
+  .nav-menu {
+    display: none; /* 默认关闭 */
+    flex-direction: column;
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-navbar);
+    padding: 20px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+    gap: 10px;
+  }
+
+  /* 当 React State 控制开启时 */
+  .nav-menu.show-mobile {
+    display: flex;
+    animation: slideDown 0.3s ease-out;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 6. 深色模式 (基于 body.dark) --- */
+body.dark {
+  --bg-navbar: #1a1c2e;
+  --text-main: #cbd5e1;
+  --primary-light: #2d3154;
+  background-color: #0f172a;
+}
+
+body.dark .navbar {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .username {
+  color: #f1f5f9;
+}

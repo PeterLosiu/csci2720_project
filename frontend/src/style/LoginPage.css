@@ -1,0 +1,239 @@
+/* 1. 全局样式重置：消除浏览器默认差异，统一基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', 'Roboto', sans-serif; /* 适配不同系统字体 */
+}
+
+/* 2. 页面背景：渐变+固定，避免滚动时重复 */
+body {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* 移动端预留边距，防止内容贴边 */
+    background-attachment: fixed; /* 固定背景，提升体验 */
+}
+
+/* 3. 登录卡片：白色背景+阴影，突出主体，hover时有轻微放大效果 */
+.login-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px; /* PC端最大宽度，避免卡片过宽 */
+    padding: 45px 35px;
+    border-radius: 16px; /* 圆角更柔和，提升美观度 */
+    box-shadow: 0 10px 40px rgba(20, 20, 80, 0.15); /* 分层阴影，更有立体感 */
+    transition: all 0.3s ease; /* 过渡动画，提升交互感 */
+}
+
+.login-card:hover {
+    transform: translateY(-5px); /* hover时轻微上移 */
+    box-shadow: 0 15px 45px rgba(20, 20, 80, 0.2); /* 阴影加深 */
+}
+
+/* 4. 登录标题：居中+深色，明确页面用途，底部加下划线 */
+.login-title {
+    text-align: center;
+    color: #2b2d42;
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 35px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #4361ee; /* 标题下划线，强化视觉 */
+}
+
+/* 5. 表单组：控制输入框间距，统一垂直布局 */
+.form-group {
+    margin-bottom: 25px;
+}
+
+/* 6. 标签样式：浅灰色，引导用户输入，hover时变色 */
+.form-label {
+    display: block;
+    color: #4a4e69;
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.form-label:hover {
+    color: #4361ee; /* hover时变主题色，提升交互感 */
+}
+
+/* 7. 输入框容器：包含图标+输入框，统一布局 */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 8. 输入框图标：固定位置，提升易用性 */
+.input-icon {
+    position: absolute;
+    left: 16px;
+    color: #7209b7;
+    font-size: 19px;
+}
+
+/* 9. 输入框样式：统一边框+圆角，聚焦时有高亮效果 */
+.form-input {
+    width: 100%;
+    padding: 14px 16px 14px 48px; /* 左侧预留图标空间 */
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #2b2d42;
+    transition: all 0.25s ease;
+    background-color: #f8f9fa; /* 输入框浅背景，区分页面背景 */
+}
+
+/* 输入框聚焦状态：边框变色+轻微阴影，强化反馈 */
+.form-input:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
+    background-color: #ffffff; /* 聚焦时背景变白，提升对比度 */
+}
+
+/* 10. 密码显示/隐藏图标：右侧悬浮，可点击，hover时变色 */
+.toggle-pw {
+    position: absolute;
+    right: 16px;
+    color: #7209b7;
+    font-size: 19px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-pw:hover {
+    color: #4361ee;
+    transform: scale(1.1); /* hover时轻微放大，提升交互感 */
+}
+
+/* 11. 记住我选项：靠左排列，与登录按钮区分 */
+.remember-group {
+    margin-bottom: 30px;
+}
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #4a4e69;
+    font-size: 15px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.remember-label:hover {
+    color: #4361ee; /* hover时变主题色 */
+}
+
+/* 自定义radio样式：选中时变主题色 */
+.remember-checkbox {
+    accent-color: #4361ee;
+    width: 18px;
+    height: 18px; /* 放大复选框，提升点击体验 */
+}
+
+/* Token提示：小字体浅灰色，告知用户token有效期 */
+.token-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #8d99ae;
+    padding-left: 28px; /* 与复选框对齐 */
+}
+
+/* 12. 登录按钮：渐变背景+圆角，hover时有深色反馈，点击时有按压效果 */
+.login-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px; /* 字母间距，提升美观度 */
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #3a56d4 0%, #32068f 100%); /* 深色渐变 */
+    transform: translateY(-2px); /* 轻微上移 */
+}
+
+.login-btn:active {
+    transform: translateY(0); /* 点击时回归原位，模拟按压 */
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2); /* 内阴影，强化按压感 */
+}
+
+.login-btn:disabled {
+    background: linear-gradient(135deg, #a5b4fc 0%, #7209b7 0%); /* 禁用时浅色渐变 */
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 13. 错误提示：红色文字，居中显示，默认隐藏，添加过渡动画 */
+.error-msg {
+    margin-top: 20px;
+    color: #e63946;
+    font-size: 14px;
+    text-align: center;
+    min-height: 22px; /* 避免提示显示时页面跳动 */
+    transition: opacity 0.3s ease;
+}
+
+/* 14. 注册入口：居中显示，链接变主题色，hover时有下划线 */
+.register-link {
+    margin-top: 30px;
+    text-align: center;
+    color: #4a4e69;
+    font-size: 15px;
+}
+
+.register-link a {
+    color: #4361ee;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.register-link a:hover {
+    color: #3a0ca3;
+    text-decoration: underline; /* hover时下划线，明确可点击 */
+}
+
+/* 15. 响应式适配：小屏幕（手机）优化 */
+@media (max-width: 375px) {
+    .login-card {
+        padding: 35px 25px;
+    }
+    .login-title {
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
+    .form-input {
+        padding: 13px 14px 13px 45px;
+        font-size: 15px;
+    }
+    .login-btn {
+        padding: 14px;
+        font-size: 16px;
+    }
+    .register-link {
+        font-size: 14px;
+    }
+}
+
+/* 16. 中等屏幕（平板）适配 */
+@media (min-width: 376px) and (max-width: 768px) {
+    .login-card {
+        max-width: 400px;
+    }
+}
