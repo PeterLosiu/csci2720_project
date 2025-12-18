@@ -2,7 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { initData } = require('./services/dataFetcher'); // Keep the correct path
+const { initData, updateEventList } = require('./services/dataFetcher'); // Keep the correct path
 
 
 // 创建Express应用
@@ -35,15 +35,14 @@ async function connectDB() {
   }
 }
 
-// Test function (from test.js)
-async function test() {
+async function runDB() {
   await connectDB(); // Connect to MongoDB first
   await initData(); // Run data fetching and saving
-  console.log('Test completed');
-  // process.exit(0); // Exit after successful test
+  console.log('Database is ready');
 }
 
-test();
+runDB();
+updateEventList();
 
 // API路由
 app.use('/api/auth', authRoutes);
