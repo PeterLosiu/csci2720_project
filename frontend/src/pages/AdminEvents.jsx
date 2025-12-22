@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../../css/AdminEvents.css';
 
-const API = 'http://localhost:3000/api';
+const API = 'http://localhost:3001/api';
 
 const authFetch = (url, opts = {}) => {
   const token = localStorage.getItem('token');

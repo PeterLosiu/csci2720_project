@@ -1,4 +1,13 @@
-const Location = require('../models/location');
+const axios = require('axios');
+const xml2js = require('xml2js');
+const Location = require('../models/Location');
+const Event = require('../models/Event');
+const mongoose = require('mongoose');
+
+const XML_URLS = {
+  programmes: "https://www.lcsd.gov.hk/datagovhk/event/events.xml", // Event data
+  venues: "https://www.lcsd.gov.hk/datagovhk/event/venues.xml"      // Location data
+};
 
 // 手动定义10个位置数据（保持原始字段顺序，新增字段由模型自动添加）
 const manualLocations = [
@@ -166,6 +175,29 @@ const manualLocations = [
   }
 ];
 
+async function fetchAndParseXML(url) {
+  try {
+    const response = await axios.get(url, { 
+      responseType: 'text', 
+      headers: { 'Content-Type': 'application/xml; charset=utf-8' } 
+    });
+    const parser = new xml2js.Parser({ 
+      explicitArray: true,
+      trim: true,
+      ignoreEmpty: true
+    });
+
+    return new Promise((resolve, reject) => {
+      parser.parseString(response.data, (err, result) => {
+        if (err) reject(err);
+        resolve(result);
+      });
+    });
+  } catch (err) {
+    console.error(`Fail to download：${url}`, err);
+    throw err;
+  }
+}
 
 async function processData(eventsJSON, venuesJSON) {
   // Mapping venue id to venue information

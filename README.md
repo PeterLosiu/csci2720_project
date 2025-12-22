@@ -37,7 +37,7 @@ npm start
 
 ### Site URLs
 ```
-http://localhost:3000	// (or the port shown in the frontend terminal)
+http://localhost:3000   // (or the port shown in the frontend terminal)
 ```
 
 	
