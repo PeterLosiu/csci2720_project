@@ -96,7 +96,9 @@ const Navbar = () => {
                             <li className={`nav-item ${location.pathname === '/EventList' ? 'active' : ''}`}>
                                 <Link to="/EventList">Event List</Link>
                             </li>
-                            <li className="nav-item admin-only">User Manager</li>
+                            <li className={`nav-item ${location.pathname === '/UserManager' ? 'active' : ''}`}>
+                                <Link to="/UserManager">User Manager</Link>
+                            </li>
                         </>
                     )}
                 </ul>

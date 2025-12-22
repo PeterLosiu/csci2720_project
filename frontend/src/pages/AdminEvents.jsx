@@ -112,6 +112,39 @@ export default function AdminEvents() {
 
   useEffect(() => { initList(); }, []);
 
+  const EventRow = ({ev, onupdate, ondelete}) =>{
+            const [payload, setPayload] = useState({
+              eventId: ev.eventId,
+              titleE: ev.titleE || '',
+              titleC: ev.titleC || '',
+              venue: ev.venue || '',
+              dateTime: new Date(ev.dateTime).toISOString().slice(0,16),
+              description: ev.description || '',
+              presenter: ev.presenter || ''
+            });
+            return (
+              <tr>
+                <td>{payload.eventId}</td>
+                <td><input value={payload.titleE}
+                           onChange={e => setPayload({...payload, titleE: e.target.value})}/></td>
+                <td><input value={payload.titleC}
+                           onChange={e => setPayload({...payload, titleC: e.target.value})}/></td>
+                <td><input value={payload.venue}
+                           onChange={e => setPayload({...payload, venue: e.target.value})}/></td>
+                <td><input type="datetime-local" value={payload.dateTime}
+                           onChange={e => setPayload({...payload, dateTime: e.target.value})}/></td>
+                <td><input value={payload.description}
+                           onChange={e => setPayload({...payload, description: e.target.value})}/></td>
+                <td><input value={payload.presenter}
+                           onChange={e => setPayload({...payload, presenter: e.target.value})}/></td>
+                <td>
+                  <button className="btn-update" onClick={() => onupdate(ev._id, payload)}>Save</button>
+                  <button className="btn-delete" onClick={() => ondelete(ev._id)}>Del</button>
+                </td>
+              </tr>
+            );
+          }
+  
   /* 骨架 */
   if (loading) return <p>Loading events…</p>;
   if (error)   return <p style={{color:'red'}}>{error}</p>;
@@ -172,38 +205,14 @@ export default function AdminEvents() {
           </tr>
         </thead>
         <tbody>
-          {events.map(ev => {
-            const [payload, setPayload] = useState({
-              eventId: ev.eventId,
-              titleE: ev.titleE || '',
-              titleC: ev.titleC || '',
-              venue: ev.venue || '',
-              dateTime: new Date(ev.dateTime).toISOString().slice(0,16),
-              description: ev.description || '',
-              presenter: ev.presenter || ''
-            });
-            return (
-              <tr key={ev._id}>
-                <td>{payload.eventId}</td>
-                <td><input value={payload.titleE}
-                           onChange={e => setPayload({...payload, titleE: e.target.value})}/></td>
-                <td><input value={payload.titleC}
-                           onChange={e => setPayload({...payload, titleC: e.target.value})}/></td>
-                <td><input value={payload.venue}
-                           onChange={e => setPayload({...payload, venue: e.target.value})}/></td>
-                <td><input type="datetime-local" value={payload.dateTime}
-                           onChange={e => setPayload({...payload, dateTime: e.target.value})}/></td>
-                <td><input value={payload.description}
-                           onChange={e => setPayload({...payload, description: e.target.value})}/></td>
-                <td><input value={payload.presenter}
-                           onChange={e => setPayload({...payload, presenter: e.target.value})}/></td>
-                <td>
-                  <button className="btn-update" onClick={() => updateEvent(ev._id, payload)}>Save</button>
-                  <button className="btn-delete" onClick={() => deleteEvent(ev._id)}>Del</button>
-                </td>
-              </tr>
-            );
-          })}
+          {events.map(ev => (
+            <EventRow
+              key = {ev._id}
+              ev = {ev}
+              onupdate = {updateEvent}
+              ondelete = {deleteEvent}
+            />
+          ))}
         </tbody>
       </table>
     </div>
